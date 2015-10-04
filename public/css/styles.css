@@ -1,0 +1,128 @@
+body {
+  padding-top: 70px;
+}
+#logo{
+	height:30px;
+}
+
+#attendance-table td ,#attendance-table th{
+	vertical-align: middle;
+}
+
+#attendance-table thead tr th{
+	text-align:center;
+}
+
+#attendance-table thead tr th:first-child{
+	width:40px;
+}
+
+#attendance-table thead tr th:nth-child(2){
+	width:150px;
+}
+
+#attendance-table thead tr th:nth-child(3){
+	width:80px;
+}
+
+#attendance-table thead tr th:last-child{
+	width:100px;
+}
+
+#attendance-table .site-row{
+	font-size: 10px;
+}
+
+#labor-btn-show, #labor-deleted-btn-show{
+	margin:10px 2%;
+	width:45%;
+
+}
+
+#labor-btn-add{
+	margin:10px 2%;
+	width:45%;
+}
+
+#labor-table thead tr th{
+	text-align: center;
+}
+
+#labor-table tbody tr td{
+	text-align: center;
+	vertical-align: middle;
+}
+
+#labor-table thead tr th:first-child{
+	width:10%;
+}
+
+#labor-table thead tr th:nth-child(2){
+	width:20%;
+}
+
+#labor-table thead tr th:nth-child(3){
+	width:40%;
+}
+
+#labor-table thead tr th:nth-child(4){
+	width:30%;
+}
+
+#labor-form-btn-search{
+	margin:10px 2%;
+	width:25%;
+}
+
+#labor-form-text-id{
+	margin:10px 2%;
+	width:65%;
+}
+
+.labor-btn-edit, .labor-btn-delete{
+	display: inline-block;
+	text-align: center;
+	vertical-align: middle;
+	width: 100%;
+	height: 100%;
+}
+
+.labor-btn-edit span,.labor-btn-delete span{
+	vertical-align: middle;
+}
+
+.attendance-name-list{
+	display: inline-block;
+	width:100%;
+}
+
+
+#site-btn-edit,#site-btn-delete,#trade-btn-edit,#trade-btn-delete{
+	width: 100%;
+}
+
+#site-btn-add,#trade-btn-add{
+	margin-bottom: 10px;
+	width: 100%;
+}
+
+#user-btn-edit,#user-btn-delete{
+	width: 49%;
+}
+
+.trade-tools{
+	width: 20%;
+}
+
+#att-list-text-search{
+	width: 70%;
+}
+
+#att-list-btn-search{
+	width: 25%;
+}
+
+#submit-attendance{
+	width: 100%;
+	margin-top:30px;
+}
