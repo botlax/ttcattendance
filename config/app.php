@@ -136,13 +136,8 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-<<<<<<< HEAD
         Intervention\Image\ImageServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
-=======
-        Illuminate\Html\HtmlServiceProvider::class,
-        Intervention\Image\ImageServiceProvider::class,
->>>>>>> 14d7b7c94f66ae35205374e1d3b546d1d5a5b00a
 
         /*
          * Application Service Providers...
@@ -201,13 +196,8 @@ return [
         'URL'       => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
-<<<<<<< HEAD
         'Form'      => Collective\Html\FormFacade::class,
         'Html'      => Collective\Html\HtmlFacade::class,
-=======
-        'Form'      => Illuminate\Html\FormFacade::class,
-        'Html'      => Illuminate\Html\HtmlFacade::class,
->>>>>>> 14d7b7c94f66ae35205374e1d3b546d1d5a5b00a
         'Flash'     => Laracasts\Flash\Flash::class,
         'Image'     => Intervention\Image\Facades\Image::class,
 
