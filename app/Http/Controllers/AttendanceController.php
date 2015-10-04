@@ -16,20 +16,11 @@ use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
-<<<<<<< HEAD
     public function __construct()
     {
         $this->middleware('auth');
         $this->middleware('role',['except' => ['showSearchID','searchID','addAttendance','storeAttendance','updateAttendance','editAttendance','lockAttendance']]);
         $this->middleware('notAdmin',['only' => ['showSearchID','searchID','addAttendance','storeAttendance','updateAttendance','editAttendance','lockAttendance']]);
-=======
-
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('role',['except' => ['showSearchID','addAttendance','storeAttendance','updateAttendance','editAttendance','lockAttendance']]);
-        $this->middleware('notAdmin',['only' => ['showSearchID','addAttendance','storeAttendance','updateAttendance','editAttendance','lockAttendance']]);
->>>>>>> 14d7b7c94f66ae35205374e1d3b546d1d5a5b00a
     }
 
     /**
@@ -218,10 +209,7 @@ class AttendanceController extends Controller
      */
     public function searchID(Request $request)
     {   
-<<<<<<< HEAD
         
-=======
->>>>>>> 14d7b7c94f66ae35205374e1d3b546d1d5a5b00a
         $siteID = $request->input('site');
         $this->validate($request,[
             'id'.$siteID => 'required|numeric'
