@@ -35,7 +35,7 @@
             "php artisan optimize"
         ],
         "post-update-cmd": [
-            "php artisan clear-compiled",
+            "php artisan clear-compiled"
         ],
         "pre-update-cmd": [
             "php artisan clear-compiled"
