@@ -73,6 +73,13 @@
                                     <li><a href="{{url('user/register')}}">Add</a></li>
                                 </ul>
                             </li>
+                            <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Holidays<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{url('holiday')}}">Show All</a></li>
+                                    <li><a href="{{url('holiday/add')}}">Add</a></li>
+                                </ul>
+                            </li>
                         </ul>
                         @endif
                         <ul class="nav navbar-nav navbar-right">
