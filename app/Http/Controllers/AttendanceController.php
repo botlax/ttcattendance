@@ -189,7 +189,7 @@ class AttendanceController extends Controller
      */
     public function showSearchID()
     {   
-        if(true){
+        if(!$this->initialized()){
             $currentDate = new Attendance;
             $currentDate->att_date = Carbon::today();
             $holiday = 0;
