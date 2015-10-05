@@ -19,6 +19,13 @@ Route::get('/home', function () {
     return redirect('attendance');
 });
 
+//holiday
+Route::get('/holiday', 'HolidayController@index');
+Route::get('/holiday/add', 'HolidayController@create');
+Route::post('/holiday/add', ['uses'=>'HolidayController@store','as'=>'storeHoliday']);
+Route::get('/holiday/{date}/delete', 'HolidayController@destroy');
+Route::get('/holiday/{date}/edit', 'HolidayController@edit');
+Route::post('/holiday/{id}/edit', ['uses'=>'HolidayController@update','as'=>'updateHoliday']);
 
 //attendance
 Route::get('/attendance',['uses' => 'AttendanceController@showFilterOptions']);
@@ -75,5 +82,5 @@ Route::post('user/login', 'Auth\AuthController@postLogin');
 Route::get('user/logout', 'Auth\AuthController@getLogout');
 
 // Registration routes...
-Route::get('user/register', ['uses'=>'Auth\AuthController@getRegister']);
+Route::get('user/register', ['middleware'=>['auth','role'],'uses'=>'Auth\AuthController@getRegister']);
 Route::post('user/register', 'Auth\AuthController@postRegister');

@@ -84,17 +84,14 @@ Attendance
 				<td>Attended</td>
 				<?php $attendance_total = 0; ?>
 				@for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay())
+				<td>
+				@if($labor->attendance()->where('att_date',$dateFrom)->first() != null && 
+					$labor->attendance()->where('att_date',$dateFrom)->first()->pivot->locked == 'true')
 				<?php 
-				Carbon\Carbon::setTestNow($dateFrom);
-				$dateF = new Carbon\Carbon('tomorrow');
-				?><td>
-				@if($labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first() != null && 
-					$labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first()->pivot->locked == 'true')
-				<?php 
-				$attendance = $labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first()->pivot->attended;
+				$attendance = $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->attended;
 				$attendance_total +=  intval($attendance);
 				?>
-					@if($showAbsent && $labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first()->pivot->attended == '0')
+					@if($showAbsent && $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->attended == '0')
 					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/attended') }}">{{$attendance}}</a>
 					@elseif(!$showAbsent)
 					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/attended') }}">{{$attendance}}</a>
@@ -103,23 +100,20 @@ Attendance
 				</td>
 				@endfor
 				<td>{{ $attendance_total }}</td>
-				<?php Carbon\Carbon::setTestNow(); $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year); ?>
+				<?php $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year); ?>
 			</tr>
 			<tr>
 				<td>Overtime(OT)</td>
 				<?php $ot_total = 0; ?>
 				@for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay())
+				<td>
+				@if($labor->attendance()->where('att_date',$dateFrom)->first() != null && 
+					$labor->attendance()->where('att_date',$dateFrom)->first()->pivot->locked == 'true')
 				<?php 
-				Carbon\Carbon::setTestNow($dateFrom);
-				$dateF = new Carbon\Carbon('tomorrow');
-				?><td>
-				@if($labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first() != null && 
-					$labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first()->pivot->locked == 'true')
-				<?php 
-				$overtime = $labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first()->pivot->ot;
+				$overtime = $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->ot;
 				$ot_total +=  intval($overtime);
 				?>
-					@if($showAbsent && $labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first()->pivot->attended == '0')
+					@if($showAbsent && $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->attended == '0')
 					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/ot') }}">{{$overtime}}</a>
 					@elseif(!$showAbsent)
 					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/ot') }}">{{$overtime}}</a>
@@ -128,23 +122,20 @@ Attendance
 				</td>
 				@endfor
 				<td>{{$ot_total}}</td>
-				<?php Carbon\Carbon::setTestNow(); $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year); ?>
+				<?php $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year); ?>
 				</tr>
 			<tr>
 				<td>Bonus OT</td>
 				<?php $bot_total = 0; ?>
 				@for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay())
+				<td>
+				@if($labor->attendance()->where('att_date',$dateFrom)->first() != null && 
+					$labor->attendance()->where('att_date',$dateFrom)->first()->pivot->locked == 'true')
 				<?php 
-				Carbon\Carbon::setTestNow($dateFrom);
-				$dateF = new Carbon\Carbon('tomorrow');
-				?><td>
-				@if($labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first() != null && 
-					$labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first()->pivot->locked == 'true')
-				<?php 
-				$bot = $labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first()->pivot->bot;
+				$bot = $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->bot;
 				$bot_total +=  intval($bot);
 				?>
-					@if($showAbsent && $labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first()->pivot->attended == '0')
+					@if($showAbsent && $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->attended == '0')
 					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/bot') }}">{{$bot}}</a>
 					@elseif(!$showAbsent)
 					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/bot') }}">{{$bot}}</a>
@@ -153,21 +144,18 @@ Attendance
 				</td>
 				@endfor
 				<td>{{$bot_total}}</td>
-				<?php Carbon\Carbon::setTestNow(); $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year); ?>
+				<?php $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year); ?>
 				</tr>
 			<tr>
 				<td>Site</td>
 				@for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay())
+				<td class="site-row">
+				@if($labor->attendance()->where('att_date',$dateFrom)->first() != null && 
+					$labor->attendance()->where('att_date',$dateFrom)->first()->pivot->locked == 'true')
 				<?php 
-				Carbon\Carbon::setTestNow($dateFrom);
-				$dateF = new Carbon\Carbon('tomorrow');
-				?><td class="site-row">
-				@if($labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first() != null && 
-					$labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first()->pivot->locked == 'true')
-				<?php 
-				$site = $labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first()->pivot->site;
+				$site = $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->site;
 				?>
-					@if($showAbsent && $labor->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateF)->first()->pivot->attended == '0')
+					@if($showAbsent && $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->attended == '0')
 					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/site') }}">{{$site}}</a>
 					@elseif(!$showAbsent)
 					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/site') }}">{{$site}}</a>
@@ -176,7 +164,7 @@ Attendance
 				</td>
 				@endfor
 				<td></td>
-				<?php Carbon\Carbon::setTestNow(); $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year); ?>
+				<?php $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year); ?>
 				</tr>			
 		@endforeach
 		</table>

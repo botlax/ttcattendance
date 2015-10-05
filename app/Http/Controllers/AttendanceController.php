@@ -8,6 +8,7 @@ use App\Http\Requests\FilterRequest;
 use App\Http\Requests\AttRequest;
 use App\Http\Controllers\Controller;
 use App\User;
+use App\Holiday;
 use App\Trade;
 use App\Site;
 use App\Labor;
@@ -188,11 +189,17 @@ class AttendanceController extends Controller
      */
     public function showSearchID()
     {   
-        if(!$this->initialized()){
+        if(true){
             $currentDate = new Attendance;
-            $currentDate->att_date = Carbon::now();
+            $currentDate->att_date = Carbon::today();
+            $holiday = 0;
+            if(Carbon::today()->format('l') == 'Friday' || Holiday::where('holidate',Carbon::today())->first() != null){
+                $holiday = 1;
+            }
+            $currentDate->holiday = $holiday;
             $currentDate->save();
         }
+
         $userID = \Auth::user()->id;
         $dateId = $this->getDateId();
         $locked = $this->todayLocked();
@@ -392,17 +399,6 @@ class AttendanceController extends Controller
             return false;
         }
         //return Attendance::latest('att_date')->first()->locked;
-    }
-
-    public function allAreFilledUp($dateId){
-        $complete = true;
-        foreach(\Auth::user()->labor as $labor){
-            if($labor->attendance()->where('id','=',$dateId)->first() == null){
-                $complete = false;
-                break;
-            }
-        }
-        return $complete;
     }
 
     public function isFilledUp($id){
