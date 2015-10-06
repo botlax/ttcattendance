@@ -31,6 +31,20 @@ Users
 						</div>
 
 						<div class="form-group">
+								{!! Form::label('basic_salary','Basic Salary: ',['class'=>'col-md-4 control-label']) !!}
+							<div class="col-md-6">
+								{!! Form::text('basic_salary',null,['class'=>'form-control']) !!}
+							</div>
+						</div>
+
+						<div class="form-group">
+								{!! Form::label('allowance','Allowance: ',['class'=>'col-md-4 control-label']) !!}
+							<div class="col-md-6">
+								{!! Form::text('allowance',null,['class'=>'form-control']) !!}
+							</div>
+						</div>
+
+						<div class="form-group">
 								{!! Form::label('trade_id','Trade:',['class'=>'col-md-4 control-label']) !!}
 							<div class="col-md-6">
 								{!! Form::select('trade_id',$trades,null,['id'=>'employee-trade','style'=>'width: 130px']) !!}

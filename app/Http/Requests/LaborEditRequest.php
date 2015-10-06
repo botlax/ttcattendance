@@ -29,6 +29,8 @@ class LaborEditRequest extends Request
             'name' => 'required',
             'trade_id' => 'required',
             'labor_photo' => 'mimes:jpeg',
+            'basic_salary' => 'numeric',
+            'allowance' => 'numeric'
         ];
     }
 
@@ -40,6 +42,8 @@ class LaborEditRequest extends Request
         'name.required' => 'Every person should have a name, peace bro.',
         'trade_id.required' => 'Why would you add someone without a profession?',
         'labor_photo.mimes' => 'PHOTO must be of type jpg',
+        'basic_salary.numeric' => 'Basic salary must be a number',
+        'allowance.numeric' => 'Allowance must be a number'
     ];
 }
 }
