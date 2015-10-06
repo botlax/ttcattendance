@@ -14,7 +14,7 @@ Users
 				<div class="panel-heading">Edit {{ $labor->name }}</div>
 				<div class="panel-body">
 				@include('partials._error')
-					{!! Form::model($labor,['route' => ['updateLabor',$labor->id],'class'='form-horizontal','files'=>TRUE]) !!}
+					{!! Form::model($labor,['route' => ['updateLabor',$labor->id],'class'=>'form-horizontal','files'=>TRUE]) !!}
 
 						<div class="form-group">
 								{!! Form::label('employee_no','Employee ID: ',['class'=>'col-md-4 control-label']) !!}
