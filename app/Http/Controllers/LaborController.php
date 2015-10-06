@@ -123,7 +123,7 @@ class LaborController extends Controller
           flash('uploaded file is not valid');
           return redirect('employees/add');
         }
-
+        dd($request->all());
         $labor = Labor::create($request->all());
         $labor->deleted = 'false';
         $labor->save();
