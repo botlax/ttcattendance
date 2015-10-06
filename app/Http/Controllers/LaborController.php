@@ -107,21 +107,23 @@ class LaborController extends Controller
     public function store(LaborEditRequest $request)
     {
         $file = Input::file('labor_photo');
-        if ($file->isValid()) {
-            $destinationPath = 'images';
-            $extension = $file->getClientOriginalExtension(); 
-            $fileName = $request->input('employee_no').'.'.$extension; 
-            $file->move($destinationPath, $fileName);
-
-            $img = Image::make('images/'.$fileName);
-            // now you are able to resize the instance
-            $img->resize(70, 70);
-            // finally we save the image as a new file
-            $img->save('images/'.$fileName);
-        }
-        else {
-          flash('uploaded file is not valid');
-          return redirect('employees/add');
+        if(!is_null($file)){
+            if ($file->isValid()) {
+                $destinationPath = 'images';
+                $extension = $file->getClientOriginalExtension(); 
+                $fileName = $request->input('employee_no').'.'.$extension; 
+                $file->move($destinationPath, $fileName);
+    
+                $img = Image::make('images/'.$fileName);
+                // now you are able to resize the instance
+                $img->resize(70, 70);
+                // finally we save the image as a new file
+                $img->save('images/'.$fileName);
+            }
+            else {
+              flash('uploaded file is not valid');
+              return redirect('employees/add');
+            }
         }
         dd($request->all());
         $labor = Labor::create($request->all());
