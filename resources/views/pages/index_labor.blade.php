@@ -27,6 +27,8 @@ Users
 					<th></th>
 					<th>Employee ID</th>
 					<th>Name</th>
+					<th>Basic Salary</th>
+					<th>Allowance</th>
 					<th colspan="2">Options</th>
 				</tr>
 			</thead>
@@ -37,6 +39,8 @@ Users
 					<td><a href="{{url('/images/'.$labor->employee_no.'.jpg')}}" target="_blank"><img src="/images/{{$labor->employee_no}}.jpg" alt="Photo" width="70px" height="70px"></a></td>
 					<td>{{ $labor->employee_no }}</td>
 					<td>{{ $labor->name }}</td>
+					<td>QAR {{ $labor->basic_salary }}</td>
+					<td>QAR {{ $labor->allowance }}</td>
 					<td><a class="labor-btn-edit btn btn-success" href="{{ url('/employees/'.$labor->employee_no.'/edit') }}"><span>Edit</span></a></td>
 					<td><a class="labor-btn-delete btn btn-danger" href="{{ url('/employees/'.$labor->id.'/delete') }}"><span>Delete</span></a></td>
 				</tr>
