@@ -125,10 +125,10 @@ class LaborController extends Controller
               return redirect('employees/add');
             }
         }
-        dd($request->all());
         $labor = Labor::create($request->all());
         $labor->deleted = 'false';
         $labor->save();
+        dd($labor);
         return redirect('employees');
     }
 
