@@ -11,7 +11,7 @@ class Labor extends Model
 
 	protected $table = 'labor';
 	public $timestamps = false;
-	protected $fillable = ['name','employee_no','trade_id','site_id'];
+	protected $fillable = ['name','employee_no','trade_id','site_id','basic_salary','allowance'];
 	public function site(){
 		return $this->belongsTo('App\Site');
 	}
