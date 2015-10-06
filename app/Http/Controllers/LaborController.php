@@ -116,7 +116,7 @@ class LaborController extends Controller
     
                 $img = Image::make('images/'.$fileName);
                 // now you are able to resize the instance
-                $img->resize(70, 70);
+                $img->resize(100, 100);
                 // finally we save the image as a new file
                 $img->save('images/'.$fileName);
             }
