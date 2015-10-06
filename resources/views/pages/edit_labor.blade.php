@@ -29,15 +29,21 @@ Users
 								{!! Form::text('name',null,['class'=>'form-control']) !!}
 							</div>
 						</div>
-
+						
 						<div class="form-group">
-								{!! Form::label('trade_id','Trade:') !!}
-								{!! Form::select('trade_id',$trades,null) !!}						
-				
-								{!! Form::label('site_id','Site:') !!}
-								{!! Form::select('site_id',$sites,null) !!}	
+								{!! Form::label('trade_id','Trade:',['class'=>'col-md-4 control-label']) !!}
+							<div class="col-md-6">
+								{!! Form::select('trade_id',$trades,null,['id'=>'employee-trade','style'=>'width: 130px']) !!}
+							</div>						
 						</div>
 
+						<div class="form-group">
+								{!! Form::label('site_id','Site:',['class'=>'col-md-4 control-label']) !!}
+							<div class="col-md-6">
+								{!! Form::select('site_id',$sites,null,['id'=>'employee-site','style'=>'width: 130px']) !!}
+							</div>
+						</div>
+						
 						<div class="form-group">
 								{!! Form::label('labor_photo','Photo:',['class'=>'col-md-4 control-label']) !!}
 							<div class="col-md-6">
