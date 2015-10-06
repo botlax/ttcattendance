@@ -78,7 +78,7 @@ Attendance
 			<tr>
 				<td rowspan="5">{{ $labor->employee_no }}</td>
 				<td rowspan="5" class="text-center">{{ $labor->name }}</td>
-				<td rowspan="5">{{ $labor->trade->name }}</td>
+				<td rowspan="5"><a href="{{url('/employees/'.$labor->employee_no.'/edit')}}">{{ $labor->trade->name }}</a></td>
 			</tr>
 			<tr>
 				<td>Attended</td>
