@@ -77,7 +77,7 @@ class LaborController extends Controller
     public function search(Request $request)
     {   
         $id = $request->input('id');
-        $site_id = 0;
+        $site_id = 0;$trade_id=0;
        if(Site::where('code', 'LIKE', '%'.$id.'%')->orWhere('name', 'LIKE', '%'.$id.'%')->first() != null){
             $site_id = Site::where('code', 'LIKE', '%'.$id.'%')->orWhere('name', 'LIKE', '%'.$id.'%')->first()->id;
        }
