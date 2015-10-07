@@ -1,5 +1,7 @@
 @extends('master')
-
+@section('title')
+Talal Attendance - Login
+@stop
 @section('content')
 <div class="container-fluid">
 	<div class="row">
