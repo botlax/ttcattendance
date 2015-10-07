@@ -24,7 +24,7 @@ class Labor extends Model
 	}
 
 	public function getNameAttribute($name){
-		return camel_case($name);
+		return ucwords($name);
 	}
 
 	public function getOvertimeAttribute(){
