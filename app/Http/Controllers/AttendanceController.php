@@ -110,6 +110,7 @@ class AttendanceController extends Controller
             
             $labors = $labors->orderBy('site_id')->get();
         }
+        $request->flash();
         return view('pages.filteroptions',compact('showAbsent','labors','sites','months','years','dateTo','dateFrom','month','year'));
     }
 
