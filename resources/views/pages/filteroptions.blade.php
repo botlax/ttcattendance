@@ -22,22 +22,22 @@ Attendance
 -->
 	<div class="form-group">
 		{!! Form::label('employee_no','Employee ID: ') !!}
-		{!! Form::text('employee_no',null) !!}
+		{!! Form::text('employee_no',old('employee_no')) !!}
 	</div>
 
 	<div class="form-group">
 		{!! Form::label('month','Month:') !!}
-		{!! Form::select('month',$months,null,['id' => 'filter-months','style'=>'width: 130px']) !!}
+		{!! Form::select('month',$months,old('month'),['id' => 'filter-months','style'=>'width: 130px']) !!}
 	</div>
 
 	<div class="form-group">
 		{!! Form::label('year','Year:') !!}
-		{!! Form::select('year',$years,null,['id' => 'filter-years','style'=>'width: 90px']) !!}
+		{!! Form::select('year',$years,old('year'),['id' => 'filter-years','style'=>'width: 90px']) !!}
 	</div>
 
 	<div class="form-group">
 		{!! Form::label('site_list[]','Site:') !!}
-		{!! Form::select('site_list[]',$sites,null,['multiple','id' => 'filter-sites','style'=>'width: 100px']) !!}
+		{!! Form::select('site_list[]',$sites,old('site_list[]'),['multiple','id' => 'filter-sites','style'=>'width: 100px']) !!}
 	</div>
 
 	<div class="form-group">
