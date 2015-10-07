@@ -31,7 +31,7 @@ class LaborController extends Controller
      */
     public function index()
     {
-        $labors = Labor::where('deleted','=','false')->orderBy('employee_no')->paginate(10);
+        $labors = Labor::where('deleted','=','false')->orderBy('employee_no')->paginate(20);
         //dd($labor);
         return view('pages.index_labor',compact('labors'));
         
@@ -44,7 +44,7 @@ class LaborController extends Controller
      */
     public function indexDeleted()
     {
-        $labors = Labor::where('deleted','=','true')->orderBy('employee_no')->paginate(10);
+        $labors = Labor::where('deleted','=','true')->orderBy('employee_no')->paginate(20);
         return view('pages.show_deleted_labor',compact('labors'));
     }
 
@@ -55,7 +55,7 @@ class LaborController extends Controller
        if(Site::where('code', 'LIKE', '%'.$id.'%')->orWhere('name', 'LIKE', '%'.$id.'%')->first() != null){
             $site_id = Site::where('code', 'LIKE', '%'.$id.'%')->orWhere('name', 'LIKE', '%'.$id.'%')->first()->id;
        }
-        $labors = Labor::where('employee_no','=',$id)->orWhere('site_id','=',$site_id)->where('deleted','=','false')->paginate(10);
+        $labors = Labor::where('employee_no','=',$id)->orWhere('site_id','=',$site_id)->where('deleted','=','false')->paginate(20);
         //dd($labors->toArray()['total']);
         return view('pages.show_deleted_labor',compact('labors'));
     }
@@ -81,7 +81,7 @@ class LaborController extends Controller
        if(Site::where('code', 'LIKE', '%'.$id.'%')->orWhere('name', 'LIKE', '%'.$id.'%')->first() != null){
             $site_id = Site::where('code', 'LIKE', '%'.$id.'%')->orWhere('name', 'LIKE', '%'.$id.'%')->first()->id;
        }
-        $labors = Labor::where('employee_no','=',$id)->orWhere('name','LIKE', '%'.$id.'%')->orWhere('site_id','=',$site_id)->where('deleted','=','false')->paginate(10);
+        $labors = Labor::where('employee_no','=',$id)->orWhere('name','LIKE', '%'.$id.'%')->orWhere('site_id','=',$site_id)->where('deleted','=','false')->paginate(20);
         //dd($labors->toArray()['total']);
         return view('pages.index_labor',compact('labors'));
     }

@@ -23,6 +23,10 @@ class Labor extends Model
 		return $this->belongsToMany('App\Attendance','labor_attendance')->withPivot('attended','ot','bot','locked','site');
 	}
 
+	public function getNameAttribute($name){
+		return camel_case($name);
+	}
+
 	public function getOvertimeAttribute(){
 		$dateId = Attendance::latest('att_date')->first()->id;
 		return $this->attendance()->where('id','=',$dateId)->first()->pivot->ot;
