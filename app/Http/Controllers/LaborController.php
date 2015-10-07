@@ -81,7 +81,12 @@ class LaborController extends Controller
        if(Site::where('code', 'LIKE', '%'.$id.'%')->orWhere('name', 'LIKE', '%'.$id.'%')->first() != null){
             $site_id = Site::where('code', 'LIKE', '%'.$id.'%')->orWhere('name', 'LIKE', '%'.$id.'%')->first()->id;
        }
-        $labors = Labor::where('employee_no','=',$id)->orWhere('name','LIKE', '%'.$id.'%')->orWhere('site_id','=',$site_id)->where('deleted','=','false')->paginate(20);
+       
+       if(Trade::where('name', 'LIKE', '%'.$id.'%')->first() != null){
+            $trade_id = Trade::where('name', 'LIKE', '%'.$id.'%')->first()->id;
+       }
+       
+        $labors = Labor::where('employee_no','=',$id)->orWhere('name','LIKE', '%'.$id.'%')->orWhere('site_id','=',$site_id)->orWhere('trade_id','=',$trade_id)->where('deleted','=','false')->paginate(20);
         //dd($labors->toArray()['total']);
         return view('pages.index_labor',compact('labors'));
     }
