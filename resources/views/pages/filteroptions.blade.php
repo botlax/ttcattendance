@@ -22,22 +22,22 @@ Attendance
 -->
 	<div class="form-group">
 		{!! Form::label('employee_no','Employee ID: ') !!}
-		{!! Form::text('employee_no',old('employee_no')) !!}
+		{!! Form::text('employee_no',null) !!}
 	</div>
 
 	<div class="form-group">
 		{!! Form::label('month','Month:') !!}
-		{!! Form::select('month',$months,old('month'),['id' => 'filter-months','style'=>'width: 130px']) !!}
+		{!! Form::select('month',$months,null,['id' => 'filter-months','style'=>'width: 130px']) !!}
 	</div>
 
 	<div class="form-group">
 		{!! Form::label('year','Year:') !!}
-		{!! Form::select('year',$years,old('year'),['id' => 'filter-years','style'=>'width: 90px']) !!}
+		{!! Form::select('year',$years,null,['id' => 'filter-years','style'=>'width: 90px']) !!}
 	</div>
 
 	<div class="form-group">
 		{!! Form::label('site_list[]','Site:') !!}
-		{!! Form::select('site_list[]',$sites,old('site_list[]'),['multiple','id' => 'filter-sites','style'=>'width: 100px']) !!}
+		{!! Form::select('site_list[]',$sites,null,['multiple','id' => 'filter-sites','style'=>'width: 100px']) !!}
 	</div>
 
 	<div class="form-group">
@@ -77,94 +77,47 @@ Attendance
 		@foreach($labors as $labor)
 			<tr>
 				<td rowspan="5">{{ $labor->employee_no }}</td>
-				<td rowspan="5" class="text-center"><a href="{{url('/employees/'.$labor->employee_no.'/edit')}}">{{ $labor->name }}</a></td>
+				<td rowspan="5" class="text-center">{{ $labor->name }}</td>
 				<td rowspan="5">{{ $labor->trade->name }}</td>
 			</tr>
 			<tr>
 				<td>Attended</td>
 				<?php $attendance_total = 0; ?>
-				@for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay())
+				@foreach($labor_att[$labor->employee_no]['attended'] as $key => $attended)
 				<td>
-				@if($labor->attendance()->where('att_date',$dateFrom)->first() != null && 
-					$labor->attendance()->where('att_date',$dateFrom)->first()->pivot->locked == 'true')
-				<?php 
-				$attendance = $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->attended;
-				$attendance_total +=  intval($attendance);
-				?>
-					@if($showAbsent && $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->attended == '0')
-					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/attended') }}">{{$attendance}}</a>
-					@elseif(!$showAbsent)
-					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/attended') }}">{{$attendance}}</a>
-					@endif
-				@endif
+					<a href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/attended')}}">{{$attended}}</a>
 				</td>
-				@endfor
+				@endforeach
 				<td>{{ $attendance_total }}</td>
-				<?php $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year); ?>
 			</tr>
 			<tr>
 				<td>Overtime(OT)</td>
 				<?php $ot_total = 0; ?>
-				@for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay())
+				@foreach($labor_att[$labor->employee_no]['ot'] as $key => $ot)
 				<td>
-				@if($labor->attendance()->where('att_date',$dateFrom)->first() != null && 
-					$labor->attendance()->where('att_date',$dateFrom)->first()->pivot->locked == 'true')
-				<?php 
-				$overtime = $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->ot;
-				$ot_total +=  intval($overtime);
-				?>
-					@if($showAbsent && $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->attended == '0')
-					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/ot') }}">{{$overtime}}</a>
-					@elseif(!$showAbsent)
-					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/ot') }}">{{$overtime}}</a>
-					@endif
-				@endif
+					<a href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/ot')}}">{{$ot}}</a>
 				</td>
-				@endfor
+				@endforeach
 				<td>{{$ot_total}}</td>
-				<?php $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year); ?>
 				</tr>
 			<tr>
 				<td>Bonus OT</td>
 				<?php $bot_total = 0; ?>
-				@for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay())
+				@foreach($labor_att[$labor->employee_no]['bot'] as $key => $bot)
 				<td>
-				@if($labor->attendance()->where('att_date',$dateFrom)->first() != null && 
-					$labor->attendance()->where('att_date',$dateFrom)->first()->pivot->locked == 'true')
-				<?php 
-				$bot = $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->bot;
-				$bot_total +=  intval($bot);
-				?>
-					@if($showAbsent && $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->attended == '0')
-					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/bot') }}">{{$bot}}</a>
-					@elseif(!$showAbsent)
-					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/bot') }}">{{$bot}}</a>
-					@endif
-				@endif
+					<a href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/bot')}}">{{$bot}}</a>
 				</td>
-				@endfor
+				@endforeach
 				<td>{{$bot_total}}</td>
-				<?php $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year); ?>
 				</tr>
 			<tr>
 				<td>Site</td>
-				@for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay())
+				@foreach($labor_att[$labor->employee_no]['site'] as $key => $site)
 				<td class="site-row">
-				@if($labor->attendance()->where('att_date',$dateFrom)->first() != null && 
-					$labor->attendance()->where('att_date',$dateFrom)->first()->pivot->locked == 'true')
-				<?php 
-				$site = $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->site;
-				?>
-					@if($showAbsent && $labor->attendance()->where('att_date',$dateFrom)->first()->pivot->attended == '0')
-					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/site') }}">{{$site}}</a>
-					@elseif(!$showAbsent)
-					<a href="{{ url('attendance/'.$dateFrom->format('Y-m-d').'/'.$labor->employee_no.'/site') }}">{{$site}}</a>
-					@endif
-				@endif
+					<a href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/site')}}">{{$site}}</a>
 				</td>
-				@endfor
+				@endforeach
 				<td></td>
-				<?php $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year); ?>
 				</tr>			
 		@endforeach
 		</table>

@@ -110,8 +110,32 @@ class AttendanceController extends Controller
             
             $labors = $labors->orderBy('site_id')->get();
         }
+        $labor_att = [];
+
+        foreach($labors as $labor){
+
+            for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay()){
+
+                $att_entry = $labor->attendance->where('string_date',$dateFrom->format('Ymd'))->first();
+
+                $labor_att[$labor->employee_no]['attended'][$dateFrom->format('Y-m-d')] = 
+                    !is_null($att_entry) ? $att_entry->pivot->attended : "";
+                
+                $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = 
+                    !is_null($att_entry) ? $att_entry->pivot->ot : "";
+                
+                $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = 
+                    !is_null($att_entry) ? $att_entry->pivot->bot : "";
+                
+                $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = 
+                    !is_null($att_entry) ? $att_entry->pivot->site : "";
+            }
+            $dateFrom = Carbon::parse('1-'.$month.'-'.$year);
+        }
+
+        //dd($labor_att);
         $request->flash();
-        return view('pages.filteroptions',compact('showAbsent','labors','sites','months','years','dateTo','dateFrom','month','year'));
+        return view('pages.filteroptions',compact('showAbsent','labors','sites','months','years','dateTo','dateFrom','month','year','labor_att'));
     }
 
     /**
@@ -123,12 +147,9 @@ class AttendanceController extends Controller
     {   
 
         $dateF = Carbon::parse($date);
-        Carbon::setTestNow($dateF);
-        $dateT = new Carbon('tomorrow');
-        Carbon::setTestNow();
         //dd($dateT);
         $labor = Labor::where('employee_no',$id)->first();
-        $entry = $labor->attendance()->where('att_date','>',$dateF)->where('att_date','<',$dateT)->first()->pivot;
+        $entry = $labor->attendance()->where('att_date',$dateF)->first()->pivot;
         if($field == 'site'){
             $sites = Site::all()->lists('code','code')->toArray();
         }
@@ -149,11 +170,8 @@ class AttendanceController extends Controller
         ]);
 
         $dateF = Carbon::parse($request->input('date'));
-        Carbon::setTestNow($dateF);
-        $dateT = new Carbon('tomorrow');
-        Carbon::setTestNow();
 
-        $entry = Labor::find($id)->attendance()->where('att_date','>',$dateF)->where('att_date','<',$dateT)->first()->pivot;
+        $entry = Labor::find($id)->attendance()->where('att_date',$dateF)->first()->pivot;
         //dd($request->input('attended'));
         if($request->input('attended') != null){
 
