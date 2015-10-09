@@ -58,31 +58,15 @@ body {
 }
 
 #labor-table thead tr th:nth-child(2){
-	width:5%;
+	width:20%;
 }
 
 #labor-table thead tr th:nth-child(3){
-	width:25%;
+	width:40%;
 }
 
 #labor-table thead tr th:nth-child(4){
-	width:10%;
-}
-
-#labor-table thead tr th:nth-child(5){
-	width:5%;
-}
-
-#labor-table thead tr th:nth-child(6){
-	width:15%;
-}
-
-#labor-table thead tr th:nth-child(7){
-	width:15%;
-}
-
-#labor-table thead tr th:nth-child(8){
-	width:15%;
+	width:30%;
 }
 
 #labor-form-btn-search{
@@ -141,4 +125,35 @@ body {
 #submit-attendance{
 	width: 100%;
 	margin-top:30px;
+}
+
+a[class^='att_entry']{
+	display: inline-block;
+	color:red;
+	padding: 3px;	
+}
+a[class^='att_entry']:hover{
+	text-decoration: none;
+}
+
+a[class^='att_entry']:visited{
+	color:red;
+}
+a[class^='att_entry']:focus{
+	color:red;
+	text-decoration: none;
+	outline: none;
+}
+
+.bordered-bottom{
+	border-bottom: 1px solid black !important;
+}
+
+#btn-make-xls{
+	margin-bottom: 10px;
+	border-bottom: 5px solid green;
+}
+#btn-make-xls:active{
+	margin-top: 4px;
+	border-bottom: 1px solid green;
 }

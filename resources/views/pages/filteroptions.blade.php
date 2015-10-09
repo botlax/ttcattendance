@@ -1,7 +1,15 @@
 @extends('master')
+
 @section('css')
-<link rel="stylesheet" href="{{url('css/att_print.css')}}">
+<link rel="stylesheet" href="{{url('css/jquery-ui.min.css')}}">
 @stop
+
+@section('script')
+<script src="{{url('js/jquery-ui.min.js')}}"></script>
+<script src="{{url('js/jquery.validate.min.js')}}"></script>
+<meta name="_token" content="{!! csrf_token() !!}"/>
+@stop
+
 @section('title')
 Attendance
 @stop
@@ -62,30 +70,33 @@ Attendance
 	<div class="text-center">
 		<h1><small>Attendance for the month of </small><mark>{{ $month }} {{ $year }}</mark></h1>
 	</div>
+	<div class="text-left">
+		<a role="button" class="btn btn-success" id="btn-make-xls" href="{{$_SERVER['REQUEST_URI']}}&makesheet=1">Generate Spreadsheet</a>
+	</div>
 		<table class='table table-bordered table-condensed' id="attendance-table">
 			<tr>
-				<th>ID</th>
-				<th>Name</th>
-				<th>Trade</th>
-				<th>Date</th>
+				<th class="bordered-bottom">ID</th>
+				<th class="bordered-bottom">Name</th>
+				<th class="bordered-bottom">Trade</th>
+				<th class="bordered-bottom">Date</th>
 			@for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay())
-				<th>{{$dateFrom->format('d')}}</th>
+				<th class="bordered-bottom">{{$dateFrom->format('d')}}</th>
 			@endfor
 			<?php $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year) ?>
-				<th>Total</th>
+				<th class="bordered-bottom">Total</th>
 			</tr>
 		@foreach($labors as $labor)
 			<tr>
-				<td rowspan="5">{{ $labor->employee_no }}</td>
-				<td rowspan="5" class="text-center">{{ $labor->name }}</td>
-				<td rowspan="5">{{ $labor->trade->name }}</td>
+				<td class="bordered-bottom" rowspan="5">{{ $labor->employee_no }}</td>
+				<td class="bordered-bottom" rowspan="5" class="text-center">{{ $labor->name }}</td>
+				<td class="bordered-bottom" rowspan="5">{{ $labor->trade->name }}</td>
 			</tr>
 			<tr>
 				<td>Attended</td>
 				<?php $attendance_total = 0; ?>
 				@foreach($labor_att[$labor->employee_no]['attended'] as $key => $attended)
 				<td>
-					<a href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/attended')}}">{{$attended}}</a>
+					<a class="att_entry_select" data-field="attended" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/attended')}}">{{$attended}}</a>		
 				</td>
 				@endforeach
 				<td>{{ $attendance_total }}</td>
@@ -95,7 +106,7 @@ Attendance
 				<?php $ot_total = 0; ?>
 				@foreach($labor_att[$labor->employee_no]['ot'] as $key => $ot)
 				<td>
-					<a href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/ot')}}">{{$ot}}</a>
+					<a class="att_entry_text" data-field="ot" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/ot')}}">{{$ot}}</a>
 				</td>
 				@endforeach
 				<td>{{$ot_total}}</td>
@@ -105,23 +116,48 @@ Attendance
 				<?php $bot_total = 0; ?>
 				@foreach($labor_att[$labor->employee_no]['bot'] as $key => $bot)
 				<td>
-					<a href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/bot')}}">{{$bot}}</a>
+					<a class="att_entry_text" data-field="bot" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/bot')}}">{{$bot}}</a>
 				</td>
 				@endforeach
 				<td>{{$bot_total}}</td>
 				</tr>
 			<tr>
-				<td>Site</td>
+				<td class="bordered-bottom">Site</td>
 				@foreach($labor_att[$labor->employee_no]['site'] as $key => $site)
-				<td class="site-row">
-					<a href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/site')}}">{{$site}}</a>
+				<td class="site-row bordered-bottom">
+					<a class="att_entry_select" data-field="site" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/site')}}">{{$site}}</a>
 				</td>
 				@endforeach
-				<td></td>
+				<td class="bordered-bottom"></td>
 				</tr>			
 		@endforeach
 		</table>
 @endif
+
+
+<div id="dialog-form-text" title="Edit">
+ 
+	{!! Form::open(['id' =>'text-form','class'=>'form-inline']) !!}
+			{!! Form::hidden('date',null) !!}
+			{!! Form::hidden('id',null) !!}
+			{!! Form::hidden('field',null) !!}
+			{!! Form::text('text-entry',null,['class'=>'form-control']) !!}		
+			{!! Form::submit('Go',['class'=>'btn btn-default']) !!}		
+	{!! Form::close() !!}
+
+</div>
+
+<div id="dialog-form-select" title="Edit">
+ 
+	{!! Form::open(['id' =>'select-form','class'=>'form-inline']) !!}
+			{!! Form::hidden('date',null) !!}
+			{!! Form::hidden('id',null) !!}
+			{!! Form::hidden('field',null) !!}
+			{!! Form::select('select-entry',[],null,['class'=>'form-control']) !!}
+			{!! Form::submit('Go',['class'=>'btn btn-default']) !!}
+	{!! Form::close() !!}
+
+</div>
 
 <script>
 	$(document).ready(function() { 
@@ -134,6 +170,143 @@ Attendance
 		$("#filter-years").select2({
 			placeholder: 'Select year'
 		});
+
+		 var rules = {
+         'text-entry': {
+             number: true
+         }
+	     };
+	     var messages = {
+	         'text-entry': {
+	             number: "Please enter a number"
+	         }
+	     };
+	     $("#text-form").validate({
+	         rules: rules,
+	         messages: messages
+	     });
+
+		$.ajaxSetup({
+		   headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
+		});
+
+		$('#select-form').submit(function(e){
+			e.preventDefault();
+			$.ajax({
+		      url: 'update',
+		      dataType:'json',
+		      type: "POST",
+		      data: {'entry':$('select[name=select-entry]').val(),'date':$('input[name=date]').val(),'id':$('input[name=id]').val(),'field':$('input[name=field]').val()},
+		      success: function(data){
+		      	//alert(data);
+		      	$('a[data-date='+data.date+'][data-field='+data.field+'][data-id='+data.en+']').html(data.entry);
+		      	if(data.result == 0){
+			      	$('a[data-date='+data.date+'][data-field=ot][data-id='+data.en+']').html('0');
+			      	$('a[data-date='+data.date+'][data-field=bot][data-id='+data.en+']').html('0');
+			      	$('a[data-date='+data.date+'][data-field=site][data-id='+data.en+']').html('0');
+			    }
+			    else if(data.result == 3){
+			      	$('a[data-date='+data.date+'][data-field=site][data-id='+data.en+']').html('—');
+			    }
+		      },
+		       error: function () {
+			        alert('You can only edit a field under a date of the past.');
+			    }
+		    });   
+		    $( "#dialog-form-select" ).dialog("close");
+		    $('select[name=select-entry]').empty();
+		});
+
+		$('#text-form').submit(function(e){
+			e.preventDefault();
+			if($('#text-form').valid()){
+	            $.ajax({
+			      url: 'update',
+			      dataType:'json',
+			      type: "POST",
+			      data: {'entry':$('input[name=text-entry]').val(),'date':$('input[name=date]').val(),'id':$('input[name=id]').val(),'field':$('input[name=field]').val()},
+			      success: function(data){
+			      	$('a[data-date='+data.date+'][data-field='+data.field+'][data-id='+data.en+']').html(data.entry);
+			      	if(data.result == 1){
+			      		$('a[data-date='+data.date+'][data-field=attended][data-id='+data.en+']').html('1');
+			      	}
+			      },
+			       error: function () {
+				        alert('You can only edit a field under a date of the past.');
+				    }
+			    });   
+			    $( "#dialog-form-text" ).dialog("close");
+			} 		    
+		});
+
+		$( "#dialog-form-text" ).dialog({ 
+			autoOpen: false,
+			resizable: false,
+		    height:200,
+		    modal: true,
+		    buttons: {
+		        Cancel: function() {
+		            $( this ).dialog( "close" );
+		        }
+	      	}
+		});
+
+		$( "#dialog-form-select" ).dialog({ 
+			autoOpen: false,
+			resizable: false,
+		    height:200,
+		    modal: true,
+		    buttons: {
+		        Cancel: function() {
+		            $( this ).dialog( "close" );
+		            $('select[name=select-entry]').empty();
+		        }
+	      	}
+		});
+
+		$("a[class^='att_entry']").click(function(evt) {
+			evt.preventDefault();
+			if($(this).attr('class') == 'att_entry_select'){
+				var entry = $(this).html();
+				var entry = entry.replace(/\s/g, "") 
+				var date = $(this).attr('data-date');
+				var id = $(this).attr('data-id');
+				var field = $(this).attr('data-field');
+				$.ajax({
+					url: 'getselect',
+				    dataType:'json',
+				    type: "POST",
+				    data: {'field':field},
+				    success: function(data){
+				      	for(var i in data){
+				      		if(i == entry){
+				      			$('select[name=select-entry]').append("<option selected value='"+i+"'>"+data[i]+"</option>");
+				      		}
+				      		else{
+				      			$('select[name=select-entry]').append("<option value='"+i+"'>"+data[i]+"</option>");
+				      		}
+				      	}
+				    }
+				});
+				$( "#dialog-form-select" ).dialog( "open" );
+				$('input[name=date]').val(date);
+				$('input[name=id]').val(id);
+				$('input[name=field]').val(field);
+			}
+			else if($(this).attr('class') == 'att_entry_text'){
+				var entry = $(this).html();
+				var entry = entry.replace(/\s/g, "") 
+				var date = $(this).attr('data-date');
+				var id = $(this).attr('data-id');
+				var field = $(this).attr('data-field');
+				$( "#dialog-form-text" ).dialog( "open" );
+				$('input[name=text-entry]').val(entry);
+				$('input[name=date]').val(date);
+				$('input[name=id]').val(id);
+				$('input[name=field]').val(field);
+			}
+		});
+
 	});
 </script>
 @stop

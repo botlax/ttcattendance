@@ -33,6 +33,9 @@ Route::get('/attendance/filter',['uses' => 'AttendanceController@filterAttendanc
 //Route::get('/attendance/create','AttendanceController@createSheet');
 Route::get('/attendance/list', ['uses' => 'AttendanceController@showSearchID']);
 Route::post('/attendance/list', ['uses' => 'AttendanceController@searchID', 'as' => 'searchID']);
+Route::post('/attendance/update', ['uses' => 'AttendanceController@updateAjaxEntry']);
+Route::get('/attendance/makesheet', ['uses' => 'AttendanceController@makeSheet']);
+Route::post('/attendance/getselect', ['uses' => 'AttendanceController@getSelectOptions']);
 Route::get('/attendance/list/{id}', ['uses' => 'AttendanceController@addAttendance']);
 Route::post('/attendance/list/{id}', ['uses' => 'AttendanceController@storeAttendance', 'as' => 'storeAttendance']);
 Route::post('/attendance/lock/{id}', ['uses' => 'AttendanceController@lockAttendance', 'as' => 'lockAttendance']);

@@ -47,7 +47,7 @@ class AttendanceController extends Controller
      */
     public function filterAttendance(Request $request)
     {   
-
+        //dd(Site::all()->lists('code','code')->toArray());
         $this->validate($request,[
             'employee_no' => 'numeric'
         ]);
@@ -118,24 +118,108 @@ class AttendanceController extends Controller
 
                 $att_entry = $labor->attendance->where('string_date',$dateFrom->format('Ymd'))->first();
 
-                $labor_att[$labor->employee_no]['attended'][$dateFrom->format('Y-m-d')] = 
-                    !is_null($att_entry) ? $att_entry->pivot->attended : "";
-                
-                $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = 
-                    !is_null($att_entry) ? $att_entry->pivot->ot : "";
-                
-                $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = 
-                    !is_null($att_entry) ? $att_entry->pivot->bot : "";
-                
-                $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = 
-                    !is_null($att_entry) ? $att_entry->pivot->site : "";
+                if(!is_null($att_entry) ){
+                    if($showAbsent && $att_entry->pivot->attended == '1'){
+                        $labor_att[$labor->employee_no]['attended'][$dateFrom->format('Y-m-d')] = '—';
+                    }
+                    else{
+                        $labor_att[$labor->employee_no]['attended'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->attended;
+                    }
+                }
+                else{
+                    $labor_att[$labor->employee_no]['attended'][$dateFrom->format('Y-m-d')] = '—';
+                }   
+
+                if(!is_null($att_entry) && $att_entry->pivot->attended == '1'){
+                    if($showAbsent){
+                        $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = '—';
+                        $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = '—';
+                        $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = '—';
+                    }
+                    else{
+                        $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->ot;
+                        $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->bot;
+                        $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->site;
+                    }
+                }
+                elseif(!is_null($att_entry) && $att_entry->pivot->attended == '0'){
+                    $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = '0';   
+                    $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = '0';
+                    $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = '0';
+                }
+                else{
+                    $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = '—';
+                    $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = '—';
+                    $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = '—';
+                }
             }
             $dateFrom = Carbon::parse('1-'.$month.'-'.$year);
         }
 
+        if($request->input('makesheet')){
+            \Excel::create('Attendance', function($excel) use($month,$year,$labors,$labor_att){
+                $excel->setTitle('Attendance');
+                $excel->setCreator('www.ttc-attendance.tk')
+                      ->setCompany('Talal Trading & Contracting Co.');
+
+                $excel->sheet('Sheetname', function($sheet) use($month,$year,$labors,$labor_att){
+
+                    //data
+                    $heading = ['ID','Name','Trade','Date'];
+                    for($x=1;$x <= $this->daysCount($month,$year);$x++){
+                        $heading[] = $x;
+                    }
+                    $heading[] = 'Total';
+
+                    //initial setup
+                    $sheet->setOrientation('landscape');
+                    $sheet->setPageMargin(0.25);
+                    //$sheet->protect('1121');
+
+                    //sheet manipulation
+                    $row = 4;
+                    $sheet->row($row, $heading);
+                    $row++;
+                    foreach($labors as $labor){
+                        $data = [$labor->employee_no,$labor->name,$labor->trade->name];
+                        foreach($labor_att[$labor->employee_no]['attended'] as $key => $attended){
+                            $data[] = $attended;
+                        }
+                        //$data[3] = 'Attended';
+                        array_splice($data, 3,0,'Attended');
+                        $sheet->row($row, $data);
+                        $row++;$data = ['','','','Overtime (OT)'];
+
+                        foreach($labor_att[$labor->employee_no]['ot'] as $key => $ot){
+                            $data[] = $ot;
+                        }
+                        //$data[3] = 'Attended';
+                        $sheet->row($row, $data);
+                        $row++;$data = ['','','','Bonus OT'];
+
+                        foreach($labor_att[$labor->employee_no]['bot'] as $key => $bot){
+                            $data[] = $bot;
+                        }
+                        //$data[3] = 'Attended';
+                        $sheet->row($row, $data);
+                        $row++;$data = ['','','','Site'];
+
+                        foreach($labor_att[$labor->employee_no]['site'] as $key => $site){
+                            $data[] = $site;
+                        }
+                        //$data[3] = 'Attended';
+                        $sheet->row($row, $data);
+                        $row++;
+                    }
+
+                    //cell styling
+
+                });
+            })->download('xlsx');
+        }
         //dd($labor_att);
         $request->flash();
-        return view('pages.filteroptions',compact('showAbsent','labors','sites','months','years','dateTo','dateFrom','month','year','labor_att'));
+        return view('pages.filteroptions',compact('labors','sites','months','years','dateTo','dateFrom','month','year','labor_att'));
     }
 
     /**
@@ -199,6 +283,67 @@ class AttendanceController extends Controller
 
         $entry->save();
         return redirect('attendance');
+    }
+
+    public function getSelectOptions()
+    {
+        $field = \Input::get('field');
+        if($field == 'site'){
+            $response = Site::all()->lists('code','code')->toArray();
+        }
+        else{
+            $response = ["1"=>"YES","0"=>"NO"];
+        }
+
+        echo json_encode($response);
+    }
+
+    public function updateAjaxEntry()
+    {   
+
+        $field = \Input::get('field');
+        $dateF = Carbon::parse(\Input::get('date'));
+        $id = \Input::get('id');
+        $input = \Input::get('entry');
+        $entry = Labor::find($id)->attendance()->where('att_date',$dateF)->first()->pivot;
+        
+        $result = 2;
+        if($field == 'attended'){
+
+            $entry->attended = $input;
+            if($input == '0'){
+                $entry->ot = 0;
+                $entry->bot = 0;
+                $result = 0;
+            }
+        }
+        elseif($field == 'ot'){
+            $ot = $input == ""?0:$input;
+            $entry->ot = $ot;
+        }
+        elseif($field == 'bot'){
+            $bot = $input == ""?0:$input;
+            $entry->bot = $bot;
+        }
+        elseif($field == 'site'){
+            if($input == ''){
+                $entry->site = '—';
+                $result = 3;
+            }
+            else{
+                $entry->site = $input;
+            }
+        }
+
+        if((isset($ot) && $ot != 0) || (isset($bot) && $bot != 0)){
+            $entry->attended = 1;
+            $result = 1;
+        }
+        $entry->save();
+
+        $response = ['result'=>$result,'field'=>$field,'date'=>$dateF->format('Y-m-d'),'en'=>$id,'entry'=>$input];
+        echo json_encode($response);
+        die();
     }
 
     /**
@@ -316,7 +461,7 @@ class AttendanceController extends Controller
                 $att->attended = 0;
                 $att->ot = 0;
                 $att->bot = 0;
-                $att->site = $labor->site->code;
+                $att->site = '—';
                 $att->save();
             }
         }
@@ -378,6 +523,46 @@ class AttendanceController extends Controller
         }
         
         return redirect('attendance/list');
+    }
+
+    /**
+     * create spreadsheet
+     *
+     * @param  Request  $request
+     * @param  int  $id
+     * @return Response
+     */
+    public function makeSheet(Request $request)
+    {
+
+        $month = $request->input('month');
+        $year = $request->input('year');
+        
+        \Excel::create('Attendance', function($excel) use($month,$year){
+            $excel->setTitle('Attendance');
+            $excel->setCreator('www.ttc-attendance.tk')
+                  ->setCompany('Talal Trading & Contracting Co.');
+
+            $excel->sheet('Sheetname', function($sheet) use($month,$year){
+
+                //data
+                $heading = ['ID','Name','Trade','Date'];
+                for($x=1;$x <= $this->daysCount($month,$year);$x++){
+                    $heading[] = $x;
+                }
+                $heading[] = 'Total';
+               
+
+
+                //initial setup
+                $sheet->setOrientation('landscape');
+                $sheet->setPageMargin(0.25);
+                $sheet->protect('1121');
+                //sheet manipulation
+                $sheet->row(4, $heading);
+
+            });
+        })->download('xls');
     }
 
     /*
