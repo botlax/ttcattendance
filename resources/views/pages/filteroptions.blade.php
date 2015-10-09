@@ -49,7 +49,7 @@ Attendance
 	</div>
 
 	<div class="form-group">
-		<button type="submit" class="btn btn-primary">Filter</button>
+		<button type="submit" id="btn-filter" class="btn btn-primary">Filter</button>
 	</div>
 
 	<div class="form-group">
@@ -159,6 +159,12 @@ Attendance
 
 </div>
 
+<div id="dialog-loading" title="Loading...">
+ 
+	<img src="https://d13yacurqjgara.cloudfront.net/users/12755/screenshots/1037374/hex-loader2.gif"/>
+
+</div>
+
 <script>
 	$(document).ready(function() { 
 		$("#filter-sites").select2({
@@ -264,6 +270,19 @@ Attendance
 	      	}
 		});
 
+		$( "#dialog-loading" ).dialog({ 
+			autoOpen: false,
+			resizable: false,
+			closeOnEscape: false,
+   			open: function(event, ui) { 
+   				$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+   				$(".ui-dialog-titlebar").hide();
+   			},
+		    height:400,
+		    width:450,
+		    modal: true
+		});
+
 		$("a[class^='att_entry']").click(function(evt) {
 			evt.preventDefault();
 			if($(this).attr('class') == 'att_entry_select'){
@@ -305,6 +324,10 @@ Attendance
 				$('input[name=id]').val(id);
 				$('input[name=field]').val(field);
 			}
+		});
+
+		$('#btn-filter').click(function(){
+			$( "#dialog-loading" ).dialog( "open" );
 		});
 
 	});
