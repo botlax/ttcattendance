@@ -1,11 +1,11 @@
 @extends('master')
 
 @section('css')
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{{url('css/jquery-ui.min.css')}}">
 @stop
 
 @section('script')
-<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="{{url('js/jquery-ui.min.js')}}"></script>
 @stop
 
 @section('title')
