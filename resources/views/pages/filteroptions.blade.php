@@ -111,7 +111,8 @@ Attendance
 				</td>
 				@endforeach
 				<td>{{$total[$labor->employee_no]['ot']}}</td>
-				</tr>
+				<td>{{ $salary[$labor->employee_no]['ot']}}</td>
+			</tr>
 			<tr>
 				<td>Bonus OT</td>
 				<?php $bot_total = 0; ?>
@@ -121,7 +122,8 @@ Attendance
 				</td>
 				@endforeach
 				<td>{{$total[$labor->employee_no]['bot']}}</td>
-				</tr>
+				<td>{{ $salary[$labor->employee_no]['bot']}}</td>
+			</tr>
 			<tr>
 				<td class="bordered-bottom">Site</td>
 				@foreach($labor_att[$labor->employee_no]['site'] as $key => $site)
@@ -130,7 +132,7 @@ Attendance
 				</td>
 				@endforeach
 				<td class="bordered-bottom"></td>
-				</tr>			
+			</tr>			
 		@endforeach
 		</table>
 @endif
