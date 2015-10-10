@@ -22,7 +22,6 @@ Attendance
 		{!! Form::label('date_from','From: ') !!}
 		{!! Form::input('date','date_from',null) !!}
 	</div>
-
 	<div class="form-group">
 		{!! Form::label('date_to','To: ') !!}
 		{!! Form::input('date','date_to',null) !!}
@@ -99,7 +98,7 @@ Attendance
 					<a class="att_entry_select" data-field="attended" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/attended')}}">{{$attended}}</a>		
 				</td>
 				@endforeach
-				<td>{{ $attendance_total }}</td>
+				<td>{{ $total[$labor->employee_no]['attended']}}</td>
 			</tr>
 			<tr>
 				<td>Overtime(OT)</td>
@@ -109,7 +108,7 @@ Attendance
 					<a class="att_entry_text" data-field="ot" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/ot')}}">{{$ot}}</a>
 				</td>
 				@endforeach
-				<td>{{$ot_total}}</td>
+				<td>{{$total[$labor->employee_no]['ot']}}</td>
 				</tr>
 			<tr>
 				<td>Bonus OT</td>
@@ -119,7 +118,7 @@ Attendance
 					<a class="att_entry_text" data-field="bot" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/bot')}}">{{$bot}}</a>
 				</td>
 				@endforeach
-				<td>{{$bot_total}}</td>
+				<td>{{$total[$labor->employee_no]['bot']}}</td>
 				</tr>
 			<tr>
 				<td class="bordered-bottom">Site</td>
@@ -176,7 +175,6 @@ Attendance
 		$("#filter-years").select2({
 			placeholder: 'Select year'
 		});
-
 		 var rules = {
          'text-entry': {
              number: true
@@ -191,11 +189,9 @@ Attendance
 	         rules: rules,
 	         messages: messages
 	     });
-
 		$.ajaxSetup({
 		   headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
 		});
-
 		$('#select-form').submit(function(e){
 			e.preventDefault();
 			$.ajax({
@@ -222,7 +218,6 @@ Attendance
 		    $( "#dialog-form-select" ).dialog("close");
 		    $('select[name=select-entry]').empty();
 		});
-
 		$('#text-form').submit(function(e){
 			e.preventDefault();
 			if($('#text-form').valid()){
@@ -244,7 +239,6 @@ Attendance
 			    $( "#dialog-form-text" ).dialog("close");
 			} 		    
 		});
-
 		$( "#dialog-form-text" ).dialog({ 
 			autoOpen: false,
 			resizable: false,
@@ -256,7 +250,6 @@ Attendance
 		        }
 	      	}
 		});
-
 		$( "#dialog-form-select" ).dialog({ 
 			autoOpen: false,
 			resizable: false,
@@ -269,7 +262,6 @@ Attendance
 		        }
 	      	}
 		});
-
 		$( "#dialog-loading" ).dialog({ 
 			autoOpen: false,
 			resizable: false,
@@ -282,7 +274,6 @@ Attendance
 		    width:450,
 		    modal: true
 		});
-
 		$("a[class^='att_entry']").click(function(evt) {
 			evt.preventDefault();
 			if($(this).attr('class') == 'att_entry_select'){
@@ -325,12 +316,10 @@ Attendance
 				$('input[name=field]').val(field);
 			}
 		});
-
 		$('#filter-form').submit(function(){
 			$( "#dialog-loading" ).dialog( "open" );
 			$(".container-fluid").fadeOut('1500');
 		});
-
 		var fewSeconds = 20;
 		$('#btn-make-xls').click(function(){
 		    var btn = $(this);
