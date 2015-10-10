@@ -175,12 +175,15 @@ class AttendanceController extends Controller
                 $total[$labor->employee_no]['ot'] = $ot_count;
                 $total[$labor->employee_no]['bot'] =  $bot_count;
                 
-                //total salary
+                //------total salary computation
+                $basic_salary = intval($labor->basic_salary);
+                $allowance = intval($labor->allowance);
                 $gross = intval($labor->basic_salary) + intval($labor->allowance);
                 $total_days = intval($dEnd);
+                
                 $salary[$labor->employee_no]['attended'] = round(($gross / $total_days) * $att_count,2);
-                $salary[$labor->employee_no]['ot'] = 0;
-                $salary[$labor->employee_no]['bot'] =  0;
+                $salary[$labor->employee_no]['ot'] = round((($basic_salary / $total_days) / 8) * $ot_count,2);
+                $salary[$labor->employee_no]['bot'] = round((($basic_salary / $total_days) / 8) * $bot_count,2);
             }
             $dateFrom = Carbon::parse('1-'.$month.'-'.$year);
         }
