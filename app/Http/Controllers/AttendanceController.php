@@ -529,13 +529,17 @@ class AttendanceController extends Controller
             }
             else{
                 Attendance::latest('att_date')->first()->labor()->attach($labor->id);
-                $att = $labor->attendance()->where('id',$this->getDateId())->first()->pivot;
-                $att->locked = 'true';
-                $att->attended = 0;
-                $att->ot = 0;
-                $att->bot = 0;
-                $att->site = '—';
-                $att->save();
+                $att = $labor->attendance()->where('id',$this->getDateId())->first();
+                $att->pivot->locked = 'true';
+                if($att->holiday == 1){
+                    $att->pivot->attended = 1;
+                else{
+                    $att->pivot->attended = 0;
+                }
+                $att->pivot->ot = 0;
+                $att->pivot->bot = 0;
+                $att->pivot->site = '—';
+                $att->pivot->save();
             }
         }
 
