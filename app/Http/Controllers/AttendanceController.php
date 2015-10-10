@@ -278,7 +278,7 @@ class AttendanceController extends Controller
         }
         //dd($total);
         $request->flash();
-        return view('pages.filteroptions',compact('total','labors','sites','months','years','dateTo','dateFrom','month','year','labor_att'));
+        return view('pages.filteroptions',compact('salary','total','labors','sites','months','years','dateTo','dateFrom','month','year','labor_att'));
     }
 
     /**
