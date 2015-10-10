@@ -129,7 +129,7 @@ body {
 
 a[class^='att_entry']{
 	display: inline-block;
-	color:red;
+	color:blue;
 	padding: 3px;	
 }
 a[class^='att_entry']:hover{
@@ -137,10 +137,10 @@ a[class^='att_entry']:hover{
 }
 
 a[class^='att_entry']:visited{
-	color:red;
+	color:blue;
 }
 a[class^='att_entry']:focus{
-	color:red;
+	color:blue;
 	text-decoration: none;
 	outline: none;
 }
