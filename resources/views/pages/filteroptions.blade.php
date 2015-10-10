@@ -334,10 +334,10 @@ Attendance
 		var fewSeconds = 10;
 		$('#btn-make-xls').click(function(){
 		    var btn = $(this);
-		    btn.before('<p id="exl-status">Creating Spreadsheet . . .</p>')
+		    btn.before('<img id="exl-status" src="https://pt.ontests.me/static/img/loading.gif" width="200px"/>')
 		    btn.fadeOut(300);
 		    setTimeout(function(){
-		    	$('#exl-status').slideUp(300);
+		    	$('#exl-status').fadeOut(300);
 		    	$('#exl-status').remove();
 		        btn.fadeIn(300);
 		    }, fewSeconds*1000);
