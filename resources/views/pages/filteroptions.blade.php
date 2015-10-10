@@ -16,7 +16,7 @@ Attendance
 
 @section('content')
 <div id="filter-attendance-wrap">
-{!! Form::open(['method'=>'GET','route' => 'filterAttendance','class' => 'form-inline']) !!}
+{!! Form::open(['method'=>'GET','route' => 'filterAttendance','id'=>'filter-form','class' => 'form-inline']) !!}
 <!--
 	<div class="form-group">
 		{!! Form::label('date_from','From: ') !!}
@@ -326,8 +326,9 @@ Attendance
 			}
 		});
 
-		$('#btn-filter').click(function(){
+		$('#filter-form').submit(function(){
 			$( "#dialog-loading" ).dialog( "open" );
+			$("content").hide();
 		});
 
 	});
