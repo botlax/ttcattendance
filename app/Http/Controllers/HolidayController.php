@@ -9,6 +9,10 @@ use App\Holiday;
 
 class HolidayController extends Controller
 {
+    
+    $this->middleware('auth');
+    $this->middleware('role',['except' => ['showSearchID','searchID','addAttendance','storeAttendance','updateAttendance','editAttendance','lockAttendance']]);
+
     /**
      * Display a listing of the resource.
      *
