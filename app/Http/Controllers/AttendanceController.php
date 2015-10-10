@@ -184,6 +184,8 @@ class AttendanceController extends Controller
                 $salary[$labor->employee_no]['attended'] = round(($gross / $total_days) * $att_count,2);
                 $salary[$labor->employee_no]['ot'] = round((($basic_salary / $total_days) / 8) * $ot_count,2);
                 $salary[$labor->employee_no]['bot'] = round((($basic_salary / $total_days) / 8) * $bot_count,2);
+                
+                $salary[$labor->employee_no]['total'] = $salary[$labor->employee_no]['attended'] + $salary[$labor->employee_no]['ot'] + $salary[$labor->employee_no]['bot'];
             }
             $dateFrom = Carbon::parse('1-'.$month.'-'.$year);
         }
