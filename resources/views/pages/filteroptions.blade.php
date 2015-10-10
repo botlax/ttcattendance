@@ -331,13 +331,13 @@ Attendance
 			$(".container-fluid").fadeOut('1500');
 		});
 
-		var fewSeconds = 10;
+		var fewSeconds = 15;
 		$('#btn-make-xls').click(function(){
 		    var btn = $(this);
 		    btn.before('<img id="exl-status" src="https://pt.ontests.me/static/img/loading.gif" width="200px"/>')
-		    btn.fadeOut(300);
+		    btn.hide();
 		    setTimeout(function(){
-		    	$('#exl-status').fadeOut(300);
+		    	$('#exl-status').hide();
 		    	$('#exl-status').remove();
 		        btn.fadeIn(300);
 		    }, fewSeconds*1000);
