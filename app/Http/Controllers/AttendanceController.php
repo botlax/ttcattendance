@@ -667,7 +667,7 @@ class AttendanceController extends Controller
     public function todayLocked(){
         $user = \Auth::user();
         if($this->hasEntry()){
-            if(false){
+            if($user->labor->first()->attendance()->where('att_date',Carbon::today()->format('Y-m-d H:i:s'))->first() != null && $user->labor->first()->attendance()->where('att_date',Carbon::today()->format('Y-m-d H:i:s'))->first()->pivot->locked == 'true'){
                 //dd($user->labor->first()->attendance()->where('att_date',Carbon::now()->first());
                 return true;
             }
@@ -678,7 +678,6 @@ class AttendanceController extends Controller
         else{
             return false;
         }
-        //return Attendance::latest('att_date')->first()->locked;
     }
 
     public function isFilledUp($id){
