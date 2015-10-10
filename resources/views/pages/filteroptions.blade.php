@@ -163,12 +163,6 @@ Attendance
 
 </div>
 
-<div id="dialog-loading" title="Loading...">
- 
-	<img src="https://d13yacurqjgara.cloudfront.net/users/12755/screenshots/1037374/hex-loader2.gif"/>
-
-</div>
-
 <script>
 	$(document).ready(function() { 
 		$("#filter-sites").select2({
@@ -267,18 +261,7 @@ Attendance
 		        }
 	      	}
 		});
-		$( "#dialog-loading" ).dialog({ 
-			autoOpen: false,
-			resizable: false,
-			closeOnEscape: false,
-   			open: function(event, ui) { 
-   				$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-   				$(".ui-dialog-titlebar").hide();
-   			},
-		    height:400,
-		    width:450,
-		    modal: true
-		});
+		
 		$("a[class^='att_entry']").click(function(evt) {
 			evt.preventDefault();
 			if($(this).attr('class') == 'att_entry_select'){
@@ -322,8 +305,8 @@ Attendance
 			}
 		});
 		$('#filter-form').submit(function(){
-			$( "#dialog-loading" ).dialog( "open" );
 			$(".container-fluid").fadeOut('1500');
+			$('body').html('<div id="dialog-loading" class="text-center"><img src="https://d13yacurqjgara.cloudfront.net/users/12755/screenshots/1037374/hex-loader2.gif"/></div>');
 		});
 		var fewSeconds = 20;
 		$('#btn-make-xls').click(function(){
