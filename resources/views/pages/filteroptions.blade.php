@@ -70,8 +70,8 @@ Attendance
 	<div class="text-center">
 		<h1><small>Attendance for the month of </small><mark>{{ $month }} {{ $year }}</mark></h1>
 	</div>
-	<div class="text-left">
-		<a role="button" class="btn btn-success" id="btn-make-xls" href="{{$_SERVER['REQUEST_URI']}}&makesheet=1">Generate Spreadsheet</a>
+	<div class="text-left" style="height:50px">
+		<a role="button" class="btn btn-success" id="btn-make-xls" href="{{$_SERVER['REQUEST_URI']}}&makesheet=1">Download Spreadsheet</a>
 	</div>
 		<table class='table table-bordered table-condensed' id="attendance-table">
 			<tr>
@@ -331,6 +331,17 @@ Attendance
 			$(".container-fluid").fadeOut('1500');
 		});
 
+		var fewSeconds = 10;
+		$('#btn-make-xls').click(function(){
+		    var btn = $(this);
+		    btn.before('<p id="exl-status">Creating Spreadsheet . . .</p>')
+		    btn.fadeOut(300);
+		    setTimeout(function(){
+		    	$('#exl-status').slideUp(300);
+		    	$('#exl-status').remove();
+		        btn.fadeIn(300);
+		    }, fewSeconds*1000);
+		});
 	});
 </script>
 @stop
