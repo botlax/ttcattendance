@@ -29,12 +29,16 @@ Users
 	@include('partials._error')
 	{!! Form::open(['route' => ['storeAttendance',$labor->id],'class'=>'form-horizontal']) !!}
 		
-		<div class="form-group">
-			{!! Form::label('present','Present:',['class'=>'col-md-4 col-sm-4 col-xs-4 control-label']) !!}
-			<div class="col-md-6 col-sm-6 col-xs-6">
-			{!! Form::select('present',['1'=>'Yes','0'=>'No'],null,['id'=>'present-add']) !!}
+		@if($holiday)
+			{!! Form::hidden('present',1) !!}
+		@else
+			<div class="form-group">
+				{!! Form::label('present','Present:',['class'=>'col-md-4 col-sm-4 col-xs-4 control-label']) !!}
+				<div class="col-md-6 col-sm-6 col-xs-6">
+				{!! Form::select('present',['1'=>'Yes','0'=>'No'],null,['id'=>'present-add']) !!}
+				</div>
 			</div>
-		</div>
+		@endif
 
 		<div class="form-group conditional">
 			{!! Form::label('overtime','Overtime:',['class'=>'col-md-4 col-sm-4 col-xs-4 control-label']) !!}
