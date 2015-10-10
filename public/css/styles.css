@@ -149,6 +149,14 @@ a[class^='att_entry']:focus{
 	border-bottom: 1px solid black !important;
 }
 
+.bordered-all{
+	border: 1px solid black !important;
+}
+
+.cell-bold{
+	font-weight:bold !important;
+}
+
 #btn-make-xls{
 	margin-bottom: 10px;
 	border-bottom: 5px solid green;
