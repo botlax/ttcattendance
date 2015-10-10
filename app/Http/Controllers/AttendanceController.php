@@ -531,11 +531,9 @@ class AttendanceController extends Controller
                 Attendance::latest('att_date')->first()->labor()->attach($labor->id);
                 $att = $labor->attendance()->where('id',$this->getDateId())->first();
                 $att->pivot->locked = 'true';
-                if($att->holiday == 1){
-                    $att->pivot->attended = 1;
-                else{
-                    $att->pivot->attended = 0;
-                }
+                
+                $att->pivot->attended = $att->holiday == 1 ? 1 : 0;
+    
                 $att->pivot->ot = 0;
                 $att->pivot->bot = 0;
                 $att->pivot->site = '—';
@@ -602,45 +600,7 @@ class AttendanceController extends Controller
         return redirect('attendance/list');
     }
 
-    /**
-     * create spreadsheet
-     *
-     * @param  Request  $request
-     * @param  int  $id
-     * @return Response
-     */
-    public function makeSheet(Request $request)
-    {
-
-        $month = $request->input('month');
-        $year = $request->input('year');
-        
-        \Excel::create('Attendance', function($excel) use($month,$year){
-            $excel->setTitle('Attendance');
-            $excel->setCreator('www.ttc-attendance.tk')
-                  ->setCompany('Talal Trading & Contracting Co.');
-
-            $excel->sheet('Sheetname', function($sheet) use($month,$year){
-
-                //data
-                $heading = ['ID','Name','Trade','Date'];
-                for($x=1;$x <= $this->daysCount($month,$year);$x++){
-                    $heading[] = $x;
-                }
-                $heading[] = 'Total';
-               
-
-
-                //initial setup
-                $sheet->setOrientation('landscape');
-                $sheet->setPageMargin(0.25);
-                $sheet->protect('1121');
-                //sheet manipulation
-                $sheet->row(4, $heading);
-
-            });
-        })->download('xls');
-    }
+    
 
     /*
     *
