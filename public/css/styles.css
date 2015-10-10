@@ -157,3 +157,7 @@ a[class^='att_entry']:focus{
 	margin-top: 4px;
 	border-bottom: 1px solid green;
 }
+
+.navbar-inverse{
+	background-color:grey !important;
+}
