@@ -166,7 +166,7 @@ class AttendanceController extends Controller
                 $total[$labor->employee_no]['bot'] =  $bot_count;
                 
                 //total salary
-                $salary[$labor->employee_no]['attended'] = ((intval($labor->basic_salary) + intval($labor_allowance)) / intval($dEnd)) * $att_count;
+                $salary[$labor->employee_no]['attended'] = ((intval($labor->basic_salary) + intval($labor->allowance)) / intval($dEnd)) * $att_count;
                 $salary[$labor->employee_no]['ot'] = $ot_count;
                 $salary[$labor->employee_no]['bot'] =  $bot_count;
             }
