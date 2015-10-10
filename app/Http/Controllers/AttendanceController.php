@@ -74,15 +74,15 @@ class AttendanceController extends Controller
         $employee_no = $request->get('employee_no');
         $site = $request->get('site_list');
         $showAbsent = is_null($request->get('view-absent'))?false:true;
-        $labors = Labor::where('deleted','false')->orderBy('employee_no')->get();
+        $labors = Labor::where('deleted','false')->orderBy('site_id')->get();
         if($viewDeleted){
-            $labors = Labor::orderBy('employee_no')->get();
+            $labors = Labor::orderBy('site_id')->get();
         }
 
         if(!empty($employee_no) && empty($site)){
-            $labors = Labor::where('employee_no',$employee_no)->where('deleted','false')->orderBy('employee_no')->get();
+            $labors = Labor::where('employee_no',$employee_no)->where('deleted','false')->orderBy('site_id')->get();
             if($viewDeleted){
-                $labors = Labor::where('employee_no',$employee_no)->orderBy('employee_no')->get();
+                $labors = Labor::where('employee_no',$employee_no)->orderBy('site_id')->get();
             }
         }
         elseif(empty($employee_no) && !empty($site)){
@@ -97,7 +97,7 @@ class AttendanceController extends Controller
                         $labors = $labors->orWhere('site_id',$s);
                 }
             }
-            $labors = $labors->orderBy('employee_no')->get();
+            $labors = $labors->orderBy('site_id')->get();
         }
         elseif(!empty($employee_no) && !empty($site)){
             $labors = Labor::where('deleted','false')->where('employee_no',$employee_no);
@@ -108,7 +108,7 @@ class AttendanceController extends Controller
                 $labors = $labors->orWhere('site_id',$s);
             }
             
-            $labors = $labors->orderBy('employee_no')->get();
+            $labors = $labors->orderBy('site_id')->get();
         }
         $labor_att = [];
 
@@ -183,7 +183,12 @@ class AttendanceController extends Controller
                     foreach($labors as $labor){
                         $data = [$labor->employee_no,$labor->name,$labor->trade->name];
                         foreach($labor_att[$labor->employee_no]['attended'] as $key => $attended){
-                            $data[] = $attended;
+                            if($attended == '—'){
+                                $data[] = '';
+                            }
+                            else{
+                                $data[] = $attended;
+                            }
                         }
                         //$data[3] = 'Attended';
                         array_splice($data, 3,0,'Attended');
@@ -191,21 +196,36 @@ class AttendanceController extends Controller
                         $row++;$data = ['','','','Overtime (OT)'];
 
                         foreach($labor_att[$labor->employee_no]['ot'] as $key => $ot){
-                            $data[] = $ot;
+                            if($labor_att[$labor->employee_no]['attended'][$key] == '1'){
+                                $data[] = $ot;
+                            }
+                            else{
+                                $data[] = '';
+                            }
                         }
                         //$data[3] = 'Attended';
                         $sheet->row($row, $data);
                         $row++;$data = ['','','','Bonus OT'];
 
                         foreach($labor_att[$labor->employee_no]['bot'] as $key => $bot){
-                            $data[] = $bot;
+                            if($labor_att[$labor->employee_no]['attended'][$key] == '1'){
+                                $data[] = $bot;
+                            }
+                            else{
+                                $data[] = '';
+                            }
                         }
                         //$data[3] = 'Attended';
                         $sheet->row($row, $data);
                         $row++;$data = ['','','','Site'];
 
                         foreach($labor_att[$labor->employee_no]['site'] as $key => $site){
-                            $data[] = $site;
+                            if($labor_att[$labor->employee_no]['attended'][$key] == '1'){
+                                $data[] = $site;
+                            }
+                            else{
+                                $data[] = '';
+                            }
                         }
                         //$data[3] = 'Attended';
                         $sheet->row($row, $data);
