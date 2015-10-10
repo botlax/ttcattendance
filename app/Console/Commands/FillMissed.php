@@ -57,13 +57,13 @@ class FillMissed extends Command
                 }
                 else{
                     Attendance::latest('att_date')->first()->labor()->attach($labor->id);
-                    $att = $labor->attendance()->where('att_date',Carbon::today()->format('Y-m-d G:i:s'))->first()->pivot;
-                    $att->locked = 'true';
-                    $att->attended = 0;
-                    $att->ot = 0;
-                    $att->bot = 0;
-                    $att->site = '—';
-                    $att->save();
+                    $att = $labor->attendance()->where('att_date',Carbon::today()->format('Y-m-d G:i:s'))->first();
+                    $att->pivot->locked = 'true';
+                    $att->pivot->attended = $att->holiday == 1 ? 1 : 0;
+                    $att->pivot->ot = 0;
+                    $att->pivot->bot = 0;
+                    $att->pivot->site = '—';
+                    $att->pivot->save();
                 }
             }
         }
