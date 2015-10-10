@@ -83,6 +83,7 @@ Attendance
 			@endfor
 			<?php $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year) ?>
 				<th class="bordered-bottom">Total</th>
+				<th class="bordered-bottom">Salary</th>
 			</tr>
 		@foreach($labors as $labor)
 			<tr>
@@ -99,6 +100,7 @@ Attendance
 				</td>
 				@endforeach
 				<td>{{ $total[$labor->employee_no]['attended']}}</td>
+				<td>{{ $salary[$labor->employee_no]['attended']}}</td>
 			</tr>
 			<tr>
 				<td>Overtime(OT)</td>
