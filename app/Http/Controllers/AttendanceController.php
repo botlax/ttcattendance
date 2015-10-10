@@ -74,15 +74,15 @@ class AttendanceController extends Controller
         $employee_no = $request->get('employee_no');
         $site = $request->get('site_list');
         $showAbsent = is_null($request->get('view-absent'))?false:true;
-        $labors = Labor::where('deleted','false')->orderBy('site_id')->get();
+        $labors = Labor::where('deleted','false')->orderBy('employee_no')->get();
         if($viewDeleted){
-            $labors = Labor::orderBy('site_id')->get();
+            $labors = Labor::orderBy('employee_no')->get();
         }
 
         if(!empty($employee_no) && empty($site)){
-            $labors = Labor::where('employee_no',$employee_no)->where('deleted','false')->orderBy('site_id')->get();
+            $labors = Labor::where('employee_no',$employee_no)->where('deleted','false')->orderBy('employee_no')->get();
             if($viewDeleted){
-                $labors = Labor::where('employee_no',$employee_no)->orderBy('site_id')->get();
+                $labors = Labor::where('employee_no',$employee_no)->orderBy('employee_no')->get();
             }
         }
         elseif(empty($employee_no) && !empty($site)){
@@ -97,7 +97,7 @@ class AttendanceController extends Controller
                         $labors = $labors->orWhere('site_id',$s);
                 }
             }
-            $labors = $labors->orderBy('site_id')->get();
+            $labors = $labors->orderBy('employee_no')->get();
         }
         elseif(!empty($employee_no) && !empty($site)){
             $labors = Labor::where('deleted','false')->where('employee_no',$employee_no);
@@ -108,7 +108,7 @@ class AttendanceController extends Controller
                 $labors = $labors->orWhere('site_id',$s);
             }
             
-            $labors = $labors->orderBy('site_id')->get();
+            $labors = $labors->orderBy('employee_no')->get();
         }
         $labor_att = [];
 
