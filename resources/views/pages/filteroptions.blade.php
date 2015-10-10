@@ -328,7 +328,7 @@ Attendance
 
 		$('#filter-form').submit(function(){
 			$( "#dialog-loading" ).dialog( "open" );
-			$(".container-fluid").hide();
+			$(".container-fluid").fadeOut('800');
 		});
 
 	});
