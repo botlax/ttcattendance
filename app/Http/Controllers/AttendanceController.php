@@ -667,9 +667,12 @@ class AttendanceController extends Controller
     public function todayLocked(){
         $user = \Auth::user();
         if($this->hasEntry()){
-            if($user->labor->first()->attendance()->latest('att_date')->first() != null && $user->labor->first()->attendance()->latest('att_date')->first()->pivot->locked == 'true'){
+            if(false){
                 //dd($user->labor->first()->attendance()->where('att_date',Carbon::now()->first());
                 return true;
+            }
+            else{
+                return false;
             }
         }
         else{
