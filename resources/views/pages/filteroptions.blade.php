@@ -331,7 +331,7 @@ Attendance
 			$(".container-fluid").fadeOut('1500');
 		});
 
-		var fewSeconds = 15;
+		var fewSeconds = 20;
 		$('#btn-make-xls').click(function(){
 		    var btn = $(this);
 		    btn.before('<img id="exl-status" src="https://pt.ontests.me/static/img/loading.gif" width="200px"/>')
