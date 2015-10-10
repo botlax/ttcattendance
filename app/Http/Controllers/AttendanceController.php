@@ -191,12 +191,12 @@ class AttendanceController extends Controller
         }
 
         if($request->input('makesheet')){
-            \Excel::create('Attendance', function($excel) use($month,$year,$labors,$labor_att,$total){
+            \Excel::create('Attendance', function($excel) use($month,$year,$labors,$labor_att,$total,$salary){
                 $excel->setTitle('Attendance');
                 $excel->setCreator('www.ttc-attendance.tk')
                       ->setCompany('Talal Trading & Contracting Co.');
 
-                $excel->sheet('Sheetname', function($sheet) use($month,$year,$labors,$labor_att,$total){
+                $excel->sheet('Sheetname', function($sheet) use($month,$year,$labors,$labor_att,$total,$salary){
 
                     //data
                     $heading = ['ID','Name','Trade','Date'];
@@ -204,6 +204,7 @@ class AttendanceController extends Controller
                         $heading[] = $x;
                     }
                     $heading[] = 'Total';
+                    $heading[] = 'Salary';
 
                     //initial setup
                     $sheet->setOrientation('landscape');
@@ -211,6 +212,7 @@ class AttendanceController extends Controller
                     //$sheet->protect('1121');
 
                     //sheet manipulation
+                    $mergeRow = 5;
                     $row = 4;
                     $sheet->row($row, $heading);
                     $row++;
@@ -225,6 +227,7 @@ class AttendanceController extends Controller
                             }
                         }
                         $data[] = $total[$labor->employee_no]['attended'];
+                        $data[] = $salary[$labor->employee_no]['attended'];
                         //$data[3] = 'Attended';
                         array_splice($data, 3,0,'Attended');
                         $sheet->row($row, $data);
@@ -239,6 +242,7 @@ class AttendanceController extends Controller
                             }
                         }
                         $data[] = $total[$labor->employee_no]['ot'];
+                        $data[] = $salary[$labor->employee_no]['ot'];
                         //$data[3] = 'Attended';
                         $sheet->row($row, $data);
                         $row++;$data = ['','','','Bonus OT'];
@@ -252,6 +256,7 @@ class AttendanceController extends Controller
                             }
                         }
                         $data[] = $total[$labor->employee_no]['bot'];
+                        $data[] = $salary[$labor->employee_no]['bot'];
                         //$data[3] = 'Attended';
                         $sheet->row($row, $data);
                         $row++;$data = ['','','','Site'];
@@ -264,9 +269,22 @@ class AttendanceController extends Controller
                                 $data[] = '';
                             }
                         }
+                        $data[] = '';
+                        $data[] = $salary[$labor->employee_no]['total'];
                         //$data[3] = 'Attended';
                         $sheet->row($row, $data);
                         $row++;
+
+                        //merge employee details cells
+                        $colA='A'.$mergeRow.':A'.($mergeRow+3); 
+                        $colB='B'.$mergeRow.':B'.($mergeRow+3); 
+                        $colC='C'.$mergeRow.':C'.($mergeRow+3);
+
+                        $sheet->mergeCells($colA);
+                        $sheet->mergeCells($colB);
+                        $sheet->mergeCells($colC);
+                        
+                        $mergeRow += 4;
                     }
 
 
@@ -276,8 +294,7 @@ class AttendanceController extends Controller
                         'O' => 5, 'P' => 5, 'Q' => 5, 'R' => 5, 'S' => 5, 'T' => 5, 'U' => 5,
                         'V' => 5, 'W' => 5, 'X' => 5, 'Y' => 5, 'Z' => 5, 'AA' => 5, 'AB' => 5,
                         'AC' => 5, 'AD' => 5, 'AE' => 5, 'AF' => 5, 'AG' => 5, 'AH' => 5, 'AI' => 5,
-                        'AJ' => 5, 'AK' => 5, 'AK' => 5,
-                        
+                        'AJ' => 5, 'AK' => 5, 'AK' => 10,
                     ));
                     //cell styling
                     $sheet->cells('A4:AK4', function($cells) {
@@ -288,6 +305,21 @@ class AttendanceController extends Controller
                         $cells->setValignment('middle');
                         //$cells->setBackground('#DDDDDA');
 
+                    });
+                    $sheet->cells('A5:A2000', function($cells) {
+
+                        $cells->setAlignment('center');
+                        $cells->setValignment('top');
+                    });
+                    $sheet->cells('B5:B2000', function($cells) {
+
+                        $cells->setAlignment('center');
+                        $cells->setValignment('top');
+                    });
+                    $sheet->cells('C5:C2000', function($cells) {
+
+                        $cells->setAlignment('center');
+                        $cells->setValignment('top');
                     });
 
                 });

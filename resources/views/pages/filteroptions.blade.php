@@ -132,7 +132,7 @@ Attendance
 				</td>
 				@endforeach
 				<td class="bordered-bottom"></td>
-				<td class="cell-bold">{{ $salary[$labor->employee_no]['total']}}</td>
+				<td class="bordered-bottom cell-bold">{{ $salary[$labor->employee_no]['total']}}</td>
 			</tr>			
 		@endforeach
 		</table>
