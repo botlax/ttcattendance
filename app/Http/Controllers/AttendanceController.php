@@ -118,6 +118,8 @@ class AttendanceController extends Controller
             $att_count = 0;
             $ot_count = 0;
             $bot_count = 0;
+            $real_ot = 0;
+            $real_bot = 0;
 
             for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay()){
 
@@ -149,6 +151,14 @@ class AttendanceController extends Controller
 
                         $ot_count += intval($att_entry->pivot->ot);
                         $bot_count += intval($att_entry->pivot->bot);
+                        if(Attendance::where('att_date',$dateFrom->format('Y-m-d H:i:s'))->first()->holiday == 1){
+                            $real_ot += intval($att_entry->pivot->ot)*1.2;
+                            $real_bot += intval($att_entry->pivot->bot)*1.2;
+                        }
+                        else{
+                            $real_ot += intval($att_entry->pivot->ot);
+                            $real_bot += intval($att_entry->pivot->bot);
+                        }
                     }
                 }
                 elseif(!is_null($att_entry) && $att_entry->pivot->attended == '0'){
@@ -166,9 +176,11 @@ class AttendanceController extends Controller
                 $total[$labor->employee_no]['bot'] =  $bot_count;
                 
                 //total salary
-                $salary[$labor->employee_no]['attended'] = round(((intval($labor->basic_salary) + intval($labor->allowance)) / intval($dEnd)) * $att_count,2);
-                $salary[$labor->employee_no]['ot'] = $ot_count;
-                $salary[$labor->employee_no]['bot'] =  $bot_count;
+                $gross = intval($labor->basic_salary) + intval($labor->allowance);
+                $total_days = intval($dEnd);
+                $salary[$labor->employee_no]['attended'] = round(($gross / $total_days) * $att_count,2);
+                $salary[$labor->employee_no]['ot'] = 0;
+                $salary[$labor->employee_no]['bot'] =  0;
             }
             $dateFrom = Carbon::parse('1-'.$month.'-'.$year);
         }
