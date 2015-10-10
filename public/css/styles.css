@@ -160,4 +160,5 @@ a[class^='att_entry']:focus{
 
 .navbar-inverse{
 	background-color:grey !important;
+	color:black !important;
 }
