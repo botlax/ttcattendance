@@ -33,11 +33,12 @@ class AttendanceController extends Controller
     {
         foreach(Labor::all() as $labor){
             Attendance::where('id',5)->first()->labor()->attach($labor->id);
-            Attendance::where('id',5)->first()->labor()->where('id',$labor->id)->first()->pivot->attended = 1;
-            Attendance::where('id',5)->first()->labor()->where('id',$labor->id)->first()->pivot->ot = 0;
-            Attendance::where('id',5)->first()->labor()->where('id',$labor->id)->first()->pivot->bot = 0;
-            Attendance::where('id',5)->first()->labor()->where('id',$labor->id)->first()->pivot->site = '—';
-            Attendance::where('id',5)->first()->labor()->where('id',$labor->id)->first()->pivot->save();
+            $att = Attendance::where('id',5)->first()->labor()->where('id',$labor->id)->first();
+            $att->pivot->attended = 1;
+            $att->pivot->ot = 0;
+            $att->pivot->bot = 0;
+            $att->pivot->site = '—';
+           $att->pivot->save();
             
         }
         $sites = Site::where('id','>',1)->get()->lists('code','id')->toArray();
