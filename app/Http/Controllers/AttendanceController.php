@@ -31,17 +31,6 @@ class AttendanceController extends Controller
      */
     public function showFilterOptions()
     {
-        foreach(Labor::all() as $labor){
-            Attendance::where('id',5)->first()->labor()->attach($labor->id);
-            $att = Attendance::where('id',5)->first()->labor()->where('id',$labor->id)->first();
-            $att->pivot->attended = 1;
-            $att->pivot->ot = 0;
-            $att->pivot->bot = 0;
-            $att->pivot->site = '—';
-            $att->pivot->locked = 'true';
-           $att->pivot->save();
-            
-        }
         $sites = Site::where('id','>',1)->get()->lists('code','id')->toArray();
         $months = ['1'=>'January','2'=>'February','3'=>'March','4'=>'April','5'=>'May','6'=>'June','7'=>'July','8'=>'August','9'=>'September','10'=>'October','11'=>'November','12'=>'December'];
         $years = [];
