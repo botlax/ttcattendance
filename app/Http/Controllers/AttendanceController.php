@@ -159,7 +159,7 @@ class AttendanceController extends Controller
                         $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = round($att_entry->pivot->bot,2);
                         $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->site;
 
-                        $ot_count += intval($att_entry->pivot->ot);
+                        $ot_count += floatval($att_entry->pivot->ot);
                         $bot_count += intval($att_entry->pivot->bot);
                     }
                 }
@@ -173,7 +173,7 @@ class AttendanceController extends Controller
                     $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = '—';
                     $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = '—';
                 }
-                $total[$labor->employee_no]['attended'] = $att_count;
+                $total[$labor->employee_no]['attended'] = round($att_count,2);
                 $total[$labor->employee_no]['ot'] = $ot_count;
                 $total[$labor->employee_no]['bot'] =  $bot_count;
                 
