@@ -231,9 +231,7 @@ Attendance
 			      		$('a[data-date='+data.date+'][data-field=attended][data-id='+data.en+']').html('1');
 			      	}
 			      },
-			       error: function () {
-				        alert('You can only edit a field under a date of the past.');
-				    }
+			       error: function(ts) { alert(ts.responseText) }
 			    });   
 			    $( "#dialog-form-text" ).dialog("close");
 			} 		    
