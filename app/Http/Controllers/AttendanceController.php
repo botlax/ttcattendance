@@ -38,7 +38,7 @@ class AttendanceController extends Controller
             $att->ot = 0;
             $att->bot = 0;
             $att->site = $labor->site->code;
-            $att->locked = 'false';
+            $att->locked = 'true';
             $att->save();
         }
         $sites = Site::where('id','>',1)->get()->lists('code','id')->toArray();
