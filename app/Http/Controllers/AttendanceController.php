@@ -365,33 +365,43 @@ class AttendanceController extends Controller
 
         $dateF = Carbon::parse($request->input('date'));
 
-        $entry = Labor::find($id)->attendance()->where('att_date',$dateF)->first()->pivot;
+        $entry = Labor::find($id)->attendance()->where('att_date',$dateF)->first();
         //dd($request->input('attended'));
         if($request->input('attended') != null){
 
-            $entry->attended = $request->input('attended');
+            $entry->pivot->attended = $request->input('attended');
             if($request->input('attended') == '0'){
-                $entry->ot = 0;
-                $entry->bot = 0;
+                $entry->pivot->ot = 0;
+                $entry->pivot->bot = 0;
             }
         }
         elseif($request->input('ot') != null){
-            $ot = $request->input('ot') == ""?0:$request->input('ot');
-            $entry->ot = $ot;
+            if($request->input('ot') != ""){
+                if($entry->holiday == 1){
+                    $ot = intval($request->input('ot')) * 1.2;
+                }
+                else{
+                    $ot = intval($request->input('ot'));
+                }
+            }
+            else{
+                $ot = 0;
+            }
+            $entry->pivot->ot = $ot;
         }
         elseif($request->input('bot') != null){
             $bot = $request->input('bot') == ""?0:$request->input('bot');
-            $entry->bot = $bot;
+            $entry->pivot->bot = $bot;
         }
         elseif($request->input('site') != null){
-            $entry->site = $request->input('site');
+            $entry->pivot->site = $request->input('site');
         }
 
         if((isset($ot) && $ot != 0) || (isset($bot) && $bot != 0)){
-            $entry->attended = 1;
+            $entry->pivot->attended = 1;
         }
 
-        $entry->save();
+        $entry->pivot->save();
         return redirect('attendance');
     }
 
@@ -428,8 +438,18 @@ class AttendanceController extends Controller
             }
         }
         elseif($field == 'ot'){
-            $ot = $input == ""?0:$input;
-            $entry->ot = $ot;
+            if($request->input('ot') != ""){
+                if($entry->holiday == 1){
+                    $ot = intval($input) * 1.2;
+                }
+                else{
+                    $ot = intval($input);
+                }
+            }
+            else{
+                $ot = 0;
+            }
+            $entry->pivot->ot = $ot;
         }
         elseif($field == 'bot'){
             $bot = $input == ""?0:$input;
