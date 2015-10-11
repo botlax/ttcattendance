@@ -231,7 +231,8 @@ Attendance
 			      		$('a[data-date='+data.date+'][data-field=attended][data-id='+data.en+']').html('1');
 			      	}
 			      },
-			       error: function(ts) { alert(ts.responseText) }
+			       error: function(ts) { var win = window.open('', '_self');
+					win.document.getElementsByTagName('Body')[0].innerText = ts.responseText; }
 			    });   
 			    $( "#dialog-form-text" ).dialog("close");
 			} 		    
