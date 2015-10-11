@@ -439,7 +439,7 @@ class AttendanceController extends Controller
         }
         elseif($field == 'ot'){
             if($input != ""){
-                if($entry->holiday == 1){
+                if(true){
                     $ot = intval($input) * 1.2;
                 }
                 else{
@@ -563,7 +563,7 @@ class AttendanceController extends Controller
         $site = Labor::find($id)->site->code;
         foreach(Labor::find($id)->attendance()->where('id','=',$this->getDateId())->get() as $attendance){
             $attendance->pivot->attended = $request->input('present');
-            if(true){
+            if($attendance->holiday == 1){
                 $attendance->pivot->ot = intval($request->input('overtime')) * 1.2;
             }
             else{
