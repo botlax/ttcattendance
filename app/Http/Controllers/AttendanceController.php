@@ -38,6 +38,7 @@ class AttendanceController extends Controller
             $att->pivot->ot = 0;
             $att->pivot->bot = 0;
             $att->pivot->site = '—';
+            $att->pivot->locked = 'true';
            $att->pivot->save();
             
         }
