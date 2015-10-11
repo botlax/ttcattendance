@@ -194,8 +194,8 @@ class AttendanceController extends Controller
                 $total_days = intval($dEnd);
                 
                 $salary[$labor->employee_no]['attended'] = round(($gross / $total_days) * $att_count,2);
-                $salary[$labor->employee_no]['ot'] = round(((($basic_salary / $total_days) / 8)*1.25) * $ot_count,2);
-                $salary[$labor->employee_no]['bot'] = round(((($basic_salary / $total_days) / 8)*1.25) * $bot_count,2);
+                $salary[$labor->employee_no]['ot'] = round(((($basic_salary / $total_days) / 8)*1.25) * $real_ot,2);
+                $salary[$labor->employee_no]['bot'] = round(((($basic_salary / $total_days) / 8)*1.25) * $real_bot,2);
                 
                 $salary[$labor->employee_no]['total'] = $salary[$labor->employee_no]['attended'] + $salary[$labor->employee_no]['ot'] + $salary[$labor->employee_no]['bot'];
             }
