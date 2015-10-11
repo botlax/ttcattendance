@@ -425,15 +425,15 @@ class AttendanceController extends Controller
         $dateF = Carbon::parse(\Input::get('date'));
         $id = \Input::get('id');
         $input = \Input::get('entry');
-        $entry = Labor::find($id)->attendance()->where('att_date',$dateF)->first()->pivot;
+        $entry = Labor::find($id)->attendance()->where('att_date',$dateF)->first();
         
         $result = 2;
         if($field == 'attended'){
 
-            $entry->attended = $input;
+            $entry->pivot->attended = $input;
             if($input == '0'){
-                $entry->ot = 0;
-                $entry->bot = 0;
+                $entry->pivot->ot = 0;
+                $entry->pivot->bot = 0;
                 $result = 0;
             }
         }
@@ -453,23 +453,23 @@ class AttendanceController extends Controller
         }
         elseif($field == 'bot'){
             $bot = $input == ""?0:$input;
-            $entry->bot = $bot;
+            $entry->pivot->bot = $bot;
         }
         elseif($field == 'site'){
             if($input == ''){
-                $entry->site = '—';
+                $entry->pivot->site = '—';
                 $result = 3;
             }
             else{
-                $entry->site = $input;
+                $entry->pivot->site = $input;
             }
         }
 
         if((isset($ot) && $ot != 0) || (isset($bot) && $bot != 0)){
-            $entry->attended = 1;
+            $entry->pivot->attended = 1;
             $result = 1;
         }
-        $entry->save();
+        $entry->pivot->save();
 
         $response = ['result'=>$result,'field'=>$field,'date'=>$dateF->format('Y-m-d'),'en'=>$id,'entry'=>$input];
         echo json_encode($response);
