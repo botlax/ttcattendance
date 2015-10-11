@@ -156,7 +156,7 @@ class AttendanceController extends Controller
                     }
                     else{
                         $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->ot;
-                        $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->bot;
+                        $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = round($att_entry->pivot->bot,2);
                         $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->site;
 
                         $ot_count += intval($att_entry->pivot->ot);
