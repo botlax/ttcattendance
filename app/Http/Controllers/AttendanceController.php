@@ -439,7 +439,7 @@ class AttendanceController extends Controller
         }
         elseif($field == 'ot'){
             if($input != ""){
-                if(true){
+                if($entry->holiday == 1){
                     $ot = intval($input) * 1.2;
                 }
                 else{
