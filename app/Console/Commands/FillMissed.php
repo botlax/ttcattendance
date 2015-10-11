@@ -53,7 +53,7 @@ class FillMissed extends Command
         foreach(Site::all() as $site){
             foreach($site->labor as $labor){
                 if($labor->attendance()->where('att_date',Carbon::today()->format('Y-m-d G:i:s'))->first() != null){
-                    $labor->attendance()-where('att_date',Carbon::today()->format('Y-m-d G:i:s'))->first()->pivot->update(['locked' => 'true']);
+                    $labor->attendance()->where('att_date',Carbon::today()->format('Y-m-d G:i:s'))->first()->pivot->update(['locked' => 'true']);
                 }
                 else{
                     Attendance::latest('att_date')->first()->labor()->attach($labor->id);
