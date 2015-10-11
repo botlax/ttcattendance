@@ -31,7 +31,7 @@ class AttendanceController extends Controller
      */
     public function showFilterOptions()
     {
-        $att_id = 1;
+        $att_id = 2;
         foreach(Labor::all() as $labor){
             Attendance::where('id',$att_id)->first()->labor()->attach($labor->id);
             $att = Attendance::where('id',$att_id)->first()->labor()->where('id',$labor->id)->first()->pivot;
