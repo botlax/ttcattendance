@@ -128,10 +128,8 @@ class AttendanceController extends Controller
         foreach($labors as $labor){
 
             $att_count = 0;
-            $ot_count = 0;
-            $bot_count = 0;
-            $real_ot = 0;
-            $real_bot = 0;
+            $ot_count = 0.00;
+            $bot_count = 0.00;
 
             for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay()){
 
@@ -157,20 +155,12 @@ class AttendanceController extends Controller
                         $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = '—';
                     }
                     else{
-                        $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->ot;
-                        $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->bot;
+                        $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = round(intval($att_entry->pivot->ot),2);
+                        $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = round(intval($att_entry->pivot->bot),2);
                         $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->site;
 
                         $ot_count += intval($att_entry->pivot->ot);
                         $bot_count += intval($att_entry->pivot->bot);
-                        if(Attendance::where('att_date',$dateFrom->format('Y-m-d H:i:s'))->first()->holiday == 1){
-                            $real_ot += intval($att_entry->pivot->ot)*1.2;
-                            $real_bot += intval($att_entry->pivot->bot);
-                        }
-                        else{
-                            $real_ot += intval($att_entry->pivot->ot);
-                            $real_bot += intval($att_entry->pivot->bot);
-                        }
                     }
                 }
                 elseif(!is_null($att_entry) && $att_entry->pivot->attended == '0'){
@@ -194,8 +184,8 @@ class AttendanceController extends Controller
                 $total_days = intval($dEnd);
                 
                 $salary[$labor->employee_no]['attended'] = round(($gross / $total_days) * $att_count,2);
-                $salary[$labor->employee_no]['ot'] = round(((($basic_salary / $total_days) / 8)*1.25) * $real_ot,2);
-                $salary[$labor->employee_no]['bot'] = round(((($basic_salary / $total_days) / 8)*1.25) * $real_bot,2);
+                $salary[$labor->employee_no]['ot'] = round(((($basic_salary / $total_days) / 8)*1.25) * $ot_count,2);
+                $salary[$labor->employee_no]['bot'] = round(((($basic_salary / $total_days) / 8)*1.25) * $bot_count,2);
                 
                 $salary[$labor->employee_no]['total'] = $salary[$labor->employee_no]['attended'] + $salary[$labor->employee_no]['ot'] + $salary[$labor->employee_no]['bot'];
             }
@@ -553,7 +543,12 @@ class AttendanceController extends Controller
         $site = Labor::find($id)->site->code;
         foreach(Labor::find($id)->attendance()->where('id','=',$this->getDateId())->get() as $attendance){
             $attendance->pivot->attended = $request->input('present');
-            $attendance->pivot->ot = $request->input('overtime');
+            if($attendance->holiday == 1){
+                $attendance->pivot->ot = intval($request->input('overtime')) * 1.2;
+            }
+            else{
+                $attendance->pivot->ot = $request->input('overtime');
+            }
             $attendance->pivot->bot = $request->input('bonus_ot');
             $attendance->pivot->site = $site;
             $attendance->pivot->locked = 'false';
@@ -640,7 +635,12 @@ class AttendanceController extends Controller
     {
         foreach(Labor::find($id)->attendance()->where('id','=',$this->getDateId())->get() as $attendance){
             $attendance->pivot->attended = $request->input('present');
-            $attendance->pivot->ot = $request->input('overtime');
+            if($attendance->holiday == 1){
+                $attendance->pivot->ot = intval($request->input('overtime')) * 1.2;
+            }
+            else{
+                $attendance->pivot->ot = $request->input('overtime');
+            }
             $attendance->pivot->bot = $request->input('bonus_ot');
             $attendance->pivot->save();
             //dd($attendance->pivot->attended);

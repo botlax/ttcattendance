@@ -163,7 +163,21 @@ a[class^='att_entry']:focus{
 	border-bottom: 1px solid green;
 }
 
-.navbar-inverse{
-	background-color:grey !important;
+.filled-up{
+	color:white !important;
+	font-weight: bold !important;
+	font-size: 18px !important;
+	display: block;
+	text-align: left;
+}
+
+.not-filled-up{
 	color:black !important;
+	font-size: 18px !important;
+	display: block;
+	text-align: left;
+}
+
+.show-att-btn{
+	margin:10px 0;
 }

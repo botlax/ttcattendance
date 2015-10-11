@@ -23,6 +23,7 @@ Users
 				<th class="text-right">Name</th>
 				<td>{{ $labor->name }}</td>
 			</tr>
+			<tr><td colspan="2" class="text-center"><img src="{{url('images/'.$labor->employee_no.'.jpg')}}" width="100px" height="100px"></td></tr>
 		</table>
 	</div>
 

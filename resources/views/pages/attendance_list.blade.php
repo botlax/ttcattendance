@@ -30,12 +30,14 @@ Users
 		{!! Form::close() !!}
 	</div>
 	<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-8 col-xs-offset-2">
-		<a href="#" style="display:block" class="text-center show-att-btn">Show filled up employee attendance <span>&#11015;</span></a>
+		<a role="button" href="#" style="display:block" class="text-center show-att-btn btn btn-default">Show filled up employee attendance <span>&#11015;</span></a>
 		<table class="table">
-		@foreach(App\Labor::where('site_id',$site->id)->get() as $labor)
+		@foreach(App\Labor::where('site_id',$site->id)->orderBy('employee_no','asc')->get() as $labor)
 			<tr>
 			@if($labor->attendance->where('id',$dateId)->first() != null)
-			<td><a href="{{url('attendance/list/'.$labor->employee_no.'/edit')}}">{{$labor->employee_no}} {{$labor->name}}</a></td>
+			<td><a class="btn btn-success filled-up" href="{{url('attendance/list/'.$labor->employee_no.'/edit')}}">{{$labor->employee_no}} {{$labor->name}}</a></td>
+			@else
+			<td><a class="btn btn-default not-filled-up" href="{{url('attendance/list/'.$labor->employee_no)}}">{{$labor->employee_no}} {{$labor->name}}</a></td>
 			@endif
 			</tr>
 		@endforeach
