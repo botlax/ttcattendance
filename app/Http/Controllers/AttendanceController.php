@@ -165,7 +165,7 @@ class AttendanceController extends Controller
                         $bot_count += intval($att_entry->pivot->bot);
                         if(Attendance::where('att_date',$dateFrom->format('Y-m-d H:i:s'))->first()->holiday == 1){
                             $real_ot += intval($att_entry->pivot->ot)*1.2;
-                            $real_bot += intval($att_entry->pivot->bot)*1.2;
+                            $real_bot += intval($att_entry->pivot->bot);
                         }
                         else{
                             $real_ot += intval($att_entry->pivot->ot);
@@ -194,8 +194,8 @@ class AttendanceController extends Controller
                 $total_days = intval($dEnd);
                 
                 $salary[$labor->employee_no]['attended'] = round(($gross / $total_days) * $att_count,2);
-                $salary[$labor->employee_no]['ot'] = round((($basic_salary / $total_days) / 8) * $ot_count,2);
-                $salary[$labor->employee_no]['bot'] = round((($basic_salary / $total_days) / 8) * $bot_count,2);
+                $salary[$labor->employee_no]['ot'] = round(((($basic_salary / $total_days) / 8)*1.25) * $ot_count,2);
+                $salary[$labor->employee_no]['bot'] = round(((($basic_salary / $total_days) / 8)*1.25) * $bot_count,2);
                 
                 $salary[$labor->employee_no]['total'] = $salary[$labor->employee_no]['attended'] + $salary[$labor->employee_no]['ot'] + $salary[$labor->employee_no]['bot'];
             }
