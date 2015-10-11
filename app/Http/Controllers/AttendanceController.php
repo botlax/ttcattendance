@@ -563,7 +563,7 @@ class AttendanceController extends Controller
         $site = Labor::find($id)->site->code;
         foreach(Labor::find($id)->attendance()->where('id','=',$this->getDateId())->get() as $attendance){
             $attendance->pivot->attended = $request->input('present');
-            if($attendance->holiday == 1){
+            if(true){
                 $attendance->pivot->ot = intval($request->input('overtime')) * 1.2;
             }
             else{
