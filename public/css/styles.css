@@ -264,6 +264,9 @@ input[name=ot],input[name=bot]{
 	width:40%;
 	outline: 1px solid #999;
 	padding:3px 0;
+	overflow: hidden;
+	position: relative;
+	top:10px;
 }
 
 .btn-att{
