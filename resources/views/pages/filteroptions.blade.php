@@ -215,9 +215,10 @@ Attendance
 				    else if(data.result == 2){
 				    	$('a[data-date='+data.date+'][data-field=ot][data-id='+data.en+']').html('0');
 				      	$('a[data-date='+data.date+'][data-field=bot][data-id='+data.en+']').html('0');
-				      	$('a[data-date='+data.date+'][data-field=site][data-id='+data.en+']').html('—');
 				    }
-				}
+				    else if(data.result == 6){
+				    	$('a[data-date='+data.date+'][data-field=site][data-id='+data.en+']').html(data.entry);
+				    }
 			    else{
 			      	alert('You cannot update a field beyond today date.');
 			    }
