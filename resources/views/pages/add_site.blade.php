@@ -33,7 +33,7 @@ Users
 						<div class="form-group">
 								{!! Form::label('user_id','In-charge:',['class'=>'col-md-4 control-label']) !!}
 							<div class="col-md-6">
-								{!! Form::select('user_id',$users,null,['id'=>'site-incharge','style'=>'width:180px']) !!}
+								{!! Form::select('user_id',$users,null,['class'=>'form-control','id'=>'site-incharge','style'=>'width:180px']) !!}
 							</div>
 						</div>
 						
@@ -50,11 +50,4 @@ Users
 		</div>
 	</div>
 </div>
-<script>
-	$(document).ready(function() { 
-		$("#site-incharge").select2({
-			placeholder: 'Select user'
-		}); 
-	});
-</script>
 @stop

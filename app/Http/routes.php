@@ -31,17 +31,28 @@ Route::post('/holiday/{id}/edit', ['uses'=>'HolidayController@update','as'=>'upd
 Route::get('/attendance',['uses' => 'AttendanceController@showFilterOptions']);
 Route::get('/attendance/filter',['uses' => 'AttendanceController@filterAttendance', 'as' => 'filterAttendance']);
 //Route::get('/attendance/create','AttendanceController@createSheet');
-Route::get('/attendance/list', ['uses' => 'AttendanceController@showSearchID']);
-Route::post('/attendance/list', ['uses' => 'AttendanceController@searchID', 'as' => 'searchID']);
+Route::get('/attendance/list', ['uses' => 'AttendanceController@showSites']);
+//Route::post('/attendance/list', ['uses' => 'AttendanceController@searchID', 'as' => 'searchID']);
+
+//Ajax routes
 Route::post('/attendance/update', ['uses' => 'AttendanceController@updateAjaxEntry']);
+Route::post('/attendance/viewallunfilled', ['uses' => 'AttendanceController@viewAjaxAllUnfilled']);
+Route::post('/attendance/viewallfilled', ['uses' => 'AttendanceController@viewAjaxAllFilled']);
+Route::post('/attendance/addattendance', ['uses' => 'AttendanceController@addAjaxAtt']);
+Route::post('/attendance/editattendance', ['uses' => 'AttendanceController@editAjaxAtt']);
+Route::post('/attendance/deleteattendance', ['uses' => 'AttendanceController@deleteAjaxAtt']);
+Route::post('/attendance/searchUnfilled', ['uses' => 'AttendanceController@searchAjaxUnfilledLabor']);
+Route::post('/attendance/searchFilled', ['uses' => 'AttendanceController@searchAjaxFilledLabor']);
 Route::get('/attendance/makesheet', ['uses' => 'AttendanceController@makeSheet']);
 Route::post('/attendance/getselect', ['uses' => 'AttendanceController@getSelectOptions']);
-Route::get('/attendance/list/{id}', ['uses' => 'AttendanceController@addAttendance']);
-Route::post('/attendance/list/{id}', ['uses' => 'AttendanceController@storeAttendance', 'as' => 'storeAttendance']);
+
+//Route::post('/attendance/list/{id}', ['uses' => 'AttendanceController@storeAttendance', 'as' => 'storeAttendance']);
+Route::get('/attendance/list/{site}', ['uses' => 'AttendanceController@showSearch']);
 Route::post('/attendance/lock/{id}', ['uses' => 'AttendanceController@lockAttendance', 'as' => 'lockAttendance']);
 Route::post('/attendance/update/{id}', ['uses' => 'AttendanceController@updateEntry','as'=>'updateEntry']);
 Route::get('/attendance/list/{id}/edit', ['uses' => 'AttendanceController@editAttendance']);
 Route::post('/attendance/list/{id}/edit', ['uses' => 'AttendanceController@updateAttendance', 'as' => 'updateAttendance']);
+Route::get('/attendance/list/{site}/lock', ['uses' => 'AttendanceController@lock']);
 Route::get('/attendance/{date}/{id}/{field}', ['uses' => 'AttendanceController@editEntry']);
 
 //users

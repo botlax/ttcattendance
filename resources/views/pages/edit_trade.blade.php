@@ -14,7 +14,7 @@ Users
 				<div class="panel-heading">Edit {{ $trade->name }}</div>
 				<div class="panel-body">
 				@include('partials._error')
-					{!! Form::model($trade,['route' => ['updateTrade',$trade->name]]) !!}
+					{!! Form::model($trade,['route' => ['updateTrade',$trade->name],'class'=>'form-horizontal']) !!}
 
 						<div class="form-group">
 								{!! Form::label('name','Name: ',['class'=>'col-md-4 control-label']) !!}

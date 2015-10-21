@@ -70,23 +70,23 @@ Attendance
 		<h1><small>Attendance for the month of </small><mark>{{ $month }} {{ $year }}</mark></h1>
 	</div>
 	<div class="text-left" style="height:50px">
-		<a role="button" class="btn btn-success" id="btn-make-xls" href="{{$_SERVER['REQUEST_URI']}}&makesheet=1">Download Spreadsheet</a>
+		<a role="button" class="btn btn-default" id="btn-make-xls" href="{{$_SERVER['REQUEST_URI']}}&makesheet=1"></a>
 	</div>
-		<table class='table table-bordered table-condensed' id="attendance-table">
+		<table id="attendance-table">
 			<tr>
 				<th class="bordered-bottom">ID</th>
 				<th class="bordered-bottom">Name</th>
 				<th class="bordered-bottom">Trade</th>
-				<th class="bordered-bottom">Date</th>
+				<th class="bordered-bottom"></th>
 			@for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay())
 				<th class="bordered-bottom">{{$dateFrom->format('d')}}</th>
 			@endfor
 			<?php $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year) ?>
-				<th class="bordered-bottom">Total</th>
-				<th class="bordered-bottom">Salary</th>
+				<th class="bordered-bottom total-head">Total</th>
+				<th class="bordered-bottom salary-head">Salary</th>
 			</tr>
 		@foreach($labors as $labor)
-			<tr>
+			<tr class="labor-stripe">
 				<td class="bordered-bottom" rowspan="5">{{ $labor->employee_no }}</td>
 				<td class="bordered-bottom" rowspan="5" class="text-center">{{ $labor->name }}</td>
 				<td class="bordered-bottom" rowspan="5">{{ $labor->trade->name }}</td>
@@ -102,7 +102,7 @@ Attendance
 				<td>{{ $total[$labor->employee_no]['attended']}}</td>
 				<td>{{ $salary[$labor->employee_no]['attended']}}</td>
 			</tr>
-			<tr>
+			<tr class="table-stripe">
 				<td>Overtime(OT)</td>
 				<?php $ot_total = 0; ?>
 				@foreach($labor_att[$labor->employee_no]['ot'] as $key => $ot)
@@ -124,7 +124,7 @@ Attendance
 				<td>{{$total[$labor->employee_no]['bot']}}</td>
 				<td>{{ $salary[$labor->employee_no]['bot']}}</td>
 			</tr>
-			<tr>
+			<tr class="table-stripe">
 				<td class="bordered-bottom">Site</td>
 				@foreach($labor_att[$labor->employee_no]['site'] as $key => $site)
 				<td class="site-row bordered-bottom">
@@ -188,9 +188,11 @@ Attendance
 	         rules: rules,
 	         messages: messages
 	     });
+	     
 		$.ajaxSetup({
 		   headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
 		});
+
 		$('#select-form').submit(function(e){
 			e.preventDefault();
 			$.ajax({
@@ -200,19 +202,28 @@ Attendance
 		      data: {'entry':$('select[name=select-entry]').val(),'date':$('input[name=date]').val(),'id':$('input[name=id]').val(),'field':$('input[name=field]').val()},
 		      success: function(data){
 		      	//alert(data);
-		      	$('a[data-date='+data.date+'][data-field='+data.field+'][data-id='+data.en+']').html(data.entry);
-		      	if(data.result == 0){
-			      	$('a[data-date='+data.date+'][data-field=ot][data-id='+data.en+']').html('0');
-			      	$('a[data-date='+data.date+'][data-field=bot][data-id='+data.en+']').html('0');
-			      	$('a[data-date='+data.date+'][data-field=site][data-id='+data.en+']').html('0');
-			    }
-			    else if(data.result == 3){
-			      	$('a[data-date='+data.date+'][data-field=site][data-id='+data.en+']').html('—');
+		      	if(data.result != 5){
+			      	$('a[data-date='+data.date+'][data-field='+data.field+'][data-id='+data.en+']').html(data.entry);
+			      	if(data.result == 0){
+				      	$('a[data-date='+data.date+'][data-field=ot][data-id='+data.en+']').html('—');
+				      	$('a[data-date='+data.date+'][data-field=bot][data-id='+data.en+']').html('—');
+				      	$('a[data-date='+data.date+'][data-field=site][data-id='+data.en+']').html('—');
+				    }
+				    else if(data.result == 3){
+				      	$('a[data-date='+data.date+'][data-field=site][data-id='+data.en+']').html('—');
+				    }
+				    else if(data.result == 2){
+				    	$('a[data-date='+data.date+'][data-field=ot][data-id='+data.en+']').html('0');
+				      	$('a[data-date='+data.date+'][data-field=bot][data-id='+data.en+']').html('0');
+				      	$('a[data-date='+data.date+'][data-field=site][data-id='+data.en+']').html('—');
+				    }
+				}
+			    else{
+			      	alert('You cannot update a field beyond today date.');
 			    }
 		      },
-		       error: function () {
-			        alert('You can only edit a field under a date of the past.');
-			    }
+		       error: function(ts) { var win = window.open('', '_self');
+					win.document.getElementsByTagName('Body')[0].innerText = ts.responseText; }
 		    });   
 		    $( "#dialog-form-select" ).dialog("close");
 		    $('select[name=select-entry]').empty();
@@ -221,15 +232,20 @@ Attendance
 			e.preventDefault();
 			if($('#text-form').valid()){
 	            $.ajax({
-			      url: 'update',
+			      url: '{{url("attendance/update")}}',
 			      dataType:'json',
 			      type: "POST",
 			      data: {'entry':$('input[name=text-entry]').val(),'date':$('input[name=date]').val(),'id':$('input[name=id]').val(),'field':$('input[name=field]').val()},
 			      success: function(data){
-			      	$('a[data-date='+data.date+'][data-field='+data.field+'][data-id='+data.en+']').html(data.entry);
-			      	if(data.result == 1){
-			      		$('a[data-date='+data.date+'][data-field=attended][data-id='+data.en+']').html('1');
-			      	}
+			      	if(data.result != 5){
+				      	$('a[data-date='+data.date+'][data-field='+data.field+'][data-id='+data.en+']').html(data.entry);
+				      	if(data.result == 1){
+				      		$('a[data-date='+data.date+'][data-field=attended][data-id='+data.en+']').html('1');
+				      	}
+				    }
+				    else{
+				    	alert('You cannot update a field beyond today date.');
+				    }
 			      },
 			       error: function(ts) { var win = window.open('', '_self');
 					win.document.getElementsByTagName('Body')[0].innerText = ts.responseText; }

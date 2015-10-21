@@ -14,7 +14,7 @@ Users
 				<div class="panel-heading">Edit {{ $site->name }}</div>
 				<div class="panel-body">
 				@include('partials._error')
-					{!! Form::model($site,['route' => ['updateSite',$site->code]]) !!}
+					{!! Form::model($site,['route' => ['updateSite',$site->code],'class'=>'form-horizontal']) !!}
 
 						<div class="form-group">
 								{!! Form::label('code','Code: ',['class'=>'col-md-4 control-label']) !!}
@@ -33,7 +33,7 @@ Users
 						<div class="form-group">
 								{!! Form::label('user_id','In-charge:',['class'=>'col-md-4 control-label']) !!}
 							<div class="col-md-6">
-								{!! Form::select('user_id',$users,null) !!}
+								{!! Form::select('user_id',$users,null,['class'=>'form-control']) !!}
 							</div>
 						</div>
 

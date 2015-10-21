@@ -13,7 +13,7 @@ class Attendance extends Model
 	protected $dates = ['att_date'];
 
 	public function labor(){
-		return $this->belongsToMany('App\Labor','labor_attendance')->withPivot('attended','ot','bot','locked');
+		return $this->belongsToMany('App\Labor','labor_attendance')->withPivot('attended','ot','bot','locked','site');
 	}
 
 	public function getAttDateAttribute($date){

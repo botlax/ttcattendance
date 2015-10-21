@@ -45,8 +45,8 @@ Users
 					<td>{{ $labor->site->code }}</td>
 					<td>QAR {{ $labor->basic_salary }}</td>
 					<td>QAR {{ $labor->allowance }}</td>
-					<td><a class="labor-btn-edit btn btn-success" href="{{ url('/employees/'.$labor->employee_no.'/edit') }}"><span>Edit</span></a></td>
-					<td><a class="labor-btn-delete btn btn-danger" href="{{ url('/employees/'.$labor->id.'/delete') }}"><span>Delete</span></a></td>
+					<td><a class="labor-btn-edit btn btn-success" href="{{ url('/employees/'.$labor->employee_no.'/edit') }}"></a></td>
+					<td><a class="labor-btn-delete btn btn-danger" href="{{ url('/employees/'.$labor->id.'/delete') }}"></a></td>
 				</tr>
 			@endforeach()
 			</tbody>

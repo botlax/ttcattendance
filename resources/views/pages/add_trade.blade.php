@@ -14,7 +14,7 @@ Users
 				<div class="panel-heading">Add Trade</div>
 				<div class="panel-body">
 				@include('partials._error')
-					{!! Form::open(['route' => 'storeTrade','class'=>'form-horizontal']) !!}
+					{!! Form::open(['route' => 'storeTrade','class'=>'form-horizontal','role'=>'form']) !!}
 
 						<div class="form-group">
 								{!! Form::label('name','Trade Name: ',['class'=>'col-md-4 control-label']) !!}

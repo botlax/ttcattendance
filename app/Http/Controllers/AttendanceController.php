@@ -17,11 +17,12 @@ use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
+    
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role',['except' => ['showSearchID','searchID','addAttendance','storeAttendance','updateAttendance','editAttendance','lockAttendance']]);
-        $this->middleware('notAdmin',['only' => ['showSearchID','searchID','addAttendance','storeAttendance','updateAttendance','editAttendance','lockAttendance']]);
+        $this->middleware('role',['except' => ['lock','viewAjaxAllFilled','viewAjaxAllUnfilled','addAjaxAtt','editAjaxAtt','deleteAjaxAtt','searchAjaxUnfilledLabor','searchAjaxFilledLabor','showSites','showSearch','addAttendance','storeAttendance','updateAttendance','editAttendance','lockAttendance']]);
+        $this->middleware('notAdmin',['only' => ['lock','viewAjaxAllFilled','viewAjaxAllUnfilled','addAjaxAtt','editAjaxAtt','deleteAjaxAtt','searchAjaxUnfilledLabor','searchAjaxFilledLabor','showSites','showSearch','addAttendance','storeAttendance','updateAttendance','editAttendance','lockAttendance']]);
     }
 
     /**
@@ -163,16 +164,13 @@ class AttendanceController extends Controller
                         $bot_count += intval($att_entry->pivot->bot);
                     }
                 }
-                elseif(!is_null($att_entry) && $att_entry->pivot->attended == '0'){
-                    $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = '0';
-                    $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = '0';
-                    $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = '0';
-                }
-                else{
+                elseif(is_null($att_entry) || $att_entry->pivot->attended == '0'){
+                    $labor_att[$labor->employee_no]['attended'][$dateFrom->format('Y-m-d')] = '—';
                     $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = '—';
                     $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = '—';
                     $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = '—';
                 }
+               
                 $total[$labor->employee_no]['attended'] = round($att_count,2);
                 $total[$labor->employee_no]['ot'] = $ot_count;
                 $total[$labor->employee_no]['bot'] =  $bot_count;
@@ -412,7 +410,7 @@ class AttendanceController extends Controller
             $response = Site::all()->lists('code','code')->toArray();
         }
         else{
-            $response = ["1"=>"YES","0"=>"NO"];
+            $response = [1=>"YES",0=>"NO"];
         }
 
         echo json_encode($response);
@@ -425,13 +423,53 @@ class AttendanceController extends Controller
         $dateF = Carbon::parse(\Input::get('date'));
         $id = \Input::get('id');
         $input = \Input::get('entry');
-        $entry = Labor::find($id)->attendance()->where('att_date',$dateF)->first();
-        
+        $entry = Labor::find($id)->attendance()->where('att_date',$dateF->format('Y-m-d H:i:s'))->first();
+        $att_date = Attendance::where('att_date',$dateF->format('Y-m-d H:i:s'))->first();
         $result = 2;
+
+        if(is_null($att_date))/*if date is not initialized*/{
+            if($dateF > Carbon::today())/*if date is in the future*/{
+
+                //return an error
+                $response = ['result'=>5,'field'=>$field,'date'=>$dateF->format('Y-m-d'),'en'=>$id,'entry'=>$input];
+                echo json_encode($response);
+                die();
+            }
+            else/*date is in the past (VALID)*/{
+
+                //initialize the date
+                $date_init = new Attendance;
+                $date_init->att_date = $dateF;
+                $holiday = 0;
+                if($dateF->format('l') == 'Friday' || Holiday::where('holidate',$dateF)->first() != null){
+                    $holiday = 1;
+                }
+                $date_init->holiday = $holiday;
+                $date_init->save();
+            }
+        }
+
+        if(is_null($entry))/*if do not entry exists*/{
+
+            //initialize entry
+            $att_date = Attendance::where('att_date',$dateF->format('Y-m-d H:i:s'))->first();
+            $att_date->labor()->attach($id);
+            $att_entry = $att_date->labor()->find($id);
+            $att_entry->pivot->attended = 0;
+            $att_entry->pivot->ot = 0;
+            $att_entry->pivot->bot = 0;
+            $att_entry->pivot->site = '—';
+            $att_entry->pivot->locked = 'true';
+            $att_entry->pivot->save();
+        }
+
+        $entry = Labor::find($id)->attendance()->where('att_date',$dateF->format('Y-m-d H:i:s'))->first();
+
         if($field == 'attended'){
 
             $entry->pivot->attended = $input;
             if($input == '0'){
+                $input = '—';
                 $entry->pivot->ot = 0;
                 $entry->pivot->bot = 0;
                 $result = 0;
@@ -470,10 +508,167 @@ class AttendanceController extends Controller
             $result = 1;
         }
         $entry->pivot->save();
-
+        
         $response = ['result'=>$result,'field'=>$field,'date'=>$dateF->format('Y-m-d'),'en'=>$id,'entry'=>$input];
         echo json_encode($response);
         die();
+        
+    }
+
+    /**
+     * Ajax labor search
+     *
+     * @return Response
+     */
+    public function searchAjaxUnfilledLabor()
+    {   
+        $employees = [];
+        $input =  \Input::get('input');
+        $labors = Labor::where('employee_no','LIKE',$input.'%')->orWhere('name','LIKE','%'.$input.'%')->orderBy('employee_no','ASC')->get();
+        foreach($labors as $labor){
+            if($labor->attendance()->where('id',$this->getDateId())->first() == null){
+                $employees[$labor->employee_no] = $labor->name;
+            }
+        }
+        echo json_encode($employees);
+        die();
+    }
+
+     /**
+     * Ajax labor search
+     *
+     * @return Response
+     */
+    public function searchAjaxFilledLabor()
+    {   
+        $employees = [];
+        $input =  \Input::get('input');
+        $input = 
+        $labors = Labor::where('employee_no','LIKE',$input.'%')->orWhere('name','LIKE','%'.$input.'%')->orderBy('employee_no','ASC')->get();
+        foreach($labors as $labor){
+            $att = $labor->attendance()->where('id',$this->getDateId())->first();
+            if($att != null && $att->pivot->site == session()->get('site')){
+                $employees[$labor->employee_no] = ['name'=>$labor->name,'ot'=>$att->pivot->ot,'bot'=>$att->pivot->bot];
+            }
+        }
+        echo json_encode($employees);
+        die();
+    }
+
+    /**
+     * Ajax add attendance
+     *
+     * @return Response
+     */
+    public function addAjaxAtt()
+    {   
+
+        $employee_id = Labor::where('employee_no',\Input::get('id'))->first()->id;
+        $site = \input::get('site');
+        $ot = \input::get('ot') == '' ? 0 : \input::get('ot');
+        $bot = \input::get('bot') == '' ? 0 : \input::get('bot');
+        //echo $employee_id.'-'.$site.'-'.$ot.'-'.$bot.'-'.$att;
+    
+        Attendance::latest('att_date')->first()->labor()->attach($employee_id);
+        $entry = Attendance::latest('att_date')->first()->labor()->find($employee_id)->pivot;
+        $entry->bot = $bot;
+        $entry->ot = $ot;
+        $entry->site = $site;
+        $entry->attended = 1;
+        $entry->locked = 'false';
+        $entry->save();
+        echo \Input::get('id');
+    }
+
+    /**
+     * Ajax add attendance
+     *
+     * @return Response
+     */
+    public function editAjaxAtt()
+    {   
+
+        $employee_id = Labor::where('employee_no',\Input::get('id'))->first()->id;
+        $ot = \input::get('ot') == '' ? 0 : \input::get('ot');
+        $bot = \input::get('bot') == '' ? 0 : \input::get('bot');
+        //echo $employee_id.'-'.$site.'-'.$ot.'-'.$bot.'-'.$att;
+    
+        $entry = Attendance::latest('att_date')->first()->labor()->find($employee_id)->pivot;
+        $entry->bot = $bot;
+        $entry->ot = $ot;
+        $entry->save();
+    }
+
+    /**
+     * Ajax add attendance
+     *
+     * @return Response
+     */
+    public function deleteAjaxAtt()
+    {   
+        $employee_id = Labor::where('employee_no',\Input::get('id'))->first()->id;
+        Attendance::latest('att_date')->first()->labor()->detach($employee_id);
+    }
+
+    /**
+     * Ajax add attendance
+     *
+     * @return Response
+     */
+    public function viewAjaxAllUnfilled()
+    {   
+        $employees = [];
+        foreach(Labor::orderBy('employee_no','ASC')->get() as $labor){
+            if($labor->attendance()->where('id',$this->getDateId())->first() == null){
+                $employees[$labor->employee_no] = $labor->name;
+            }
+        }
+        echo json_encode($employees);
+        die();
+    }
+
+    /**
+     * Ajax add attendance
+     *
+     * @return Response
+     */
+    public function viewAjaxAllFilled()
+    {   
+        $employees = [];
+        foreach(Labor::orderBy('employee_no','ASC')->get() as $labor){
+            $att = $labor->attendance()->where('id',$this->getDateId())->first();
+            if($att != null && $att->pivot->site == session()->get('site')){
+                $employees[$labor->employee_no] = ['name'=>$labor->name,'ot'=>$att->pivot->ot,'bot'=>$att->pivot->bot];
+            }
+        }
+        echo json_encode($employees);
+        die();
+    }
+
+    /**
+     * Ajax add attendance
+     *
+     * @return Response
+     */
+    public function lock($site)
+    {
+        $num = 1;
+        foreach(Attendance::latest('att_date')->first()->labor()->get() as $labor){
+            $att = $labor;
+            if($att->pivot->site == $site){
+                $num++;
+                $att->pivot->locked = 'true';
+                $att->pivot->save();
+            }
+        }
+        if($num == 1){
+            flash()->error('Attendance is empty.');
+            return redirect('attendance/list/'.$site);
+        }
+        else{
+            flash()->success('Attendance successfully submitted!');
+            return redirect('attendance/list');
+        }
     }
 
     /**
@@ -481,7 +676,7 @@ class AttendanceController extends Controller
      *
      * @return Response
      */
-    public function showSearchID()
+    public function showSites()
     {   
         if(!$this->initialized()){
             $currentDate = new Attendance;
@@ -494,13 +689,15 @@ class AttendanceController extends Controller
             $currentDate->save();
         }
 
+        //$labors = Labor::all()->lists('name','employee_no')->toArray();
+        //dd($labors);
+
         $userID = \Auth::user()->id;
         $dateId = $this->getDateId();
-        $locked = $this->todayLocked();
 
         $user = \Auth::user();
         $sites = $user->site;
-        return view('pages.attendance_list',compact('sites','locked','dateId','userID'));
+        return view('pages.attendance_list',compact('sites','dateId','userID'));
     }
 
     /**
@@ -508,7 +705,23 @@ class AttendanceController extends Controller
      *
      * @return Response
      */
-    public function searchID(Request $request)
+    public function showSearch($site)
+    {   
+        
+        if(!$this->siteIsLocked($site)){
+            $labors = Site::where('code',$site)->first()->labor()->get();
+            session()->put('site', $site);
+            return view('pages.add_attendance',compact('labors','site'));
+        }
+        else{
+            flash()->error('Attendance for this site has been already submitted.');
+            return redirect('attendance/list');
+        }
+    }
+
+    
+    /*
+    public function showSearch(Request $request)
     {   
         
         $siteID = $request->input('site');
@@ -536,6 +749,8 @@ class AttendanceController extends Controller
 
         
     }
+*/
+
 
     /**
      * Add Attendance to labor
@@ -697,15 +912,14 @@ class AttendanceController extends Controller
         return $have;
     }
 
-    public function todayLocked(){
-        $user = \Auth::user();
-        if($this->hasEntry()){
-            if($user->labor->first()->attendance()->where('att_date',Carbon::today()->format('Y-m-d H:i:s'))->first() != null && $user->labor->first()->attendance()->where('att_date',Carbon::today()->format('Y-m-d H:i:s'))->first()->pivot->locked == 'true'){
-                //dd($user->labor->first()->attendance()->where('att_date',Carbon::now()->first());
-                return true;
-            }
-            else{
-                return false;
+    public function siteIsLocked($site){
+        $labor = Attendance::latest('att_date')->first()->labor();
+        if(!empty($labor->get()->toArray())){
+            foreach($labor->get() as $att){
+                if($att->pivot->site == $site){
+                    return $att->pivot->locked == 'true'?true:false;
+                    break;
+                }
             }
         }
         else{

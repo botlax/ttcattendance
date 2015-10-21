@@ -10,12 +10,12 @@ Users
 		<a id="site-btn-add" role="button" class="btn btn-default" href="{{ url('/trades/add') }}">Add</a>
 	</div>
 	<div class="col-md-6 col-md-offset-3">
-		<table class="table table-striped table-bordered table-condensed">
+		<table id="trade-table" class="table table-striped table-bordered table-condensed">
 		@foreach($trades as $trade)
 			<tr>
 				<td>{{ $trade->name }}</td>
-				<td class="trade-tools"><a id="trade-btn-edit" role="button" class="btn btn-success" href="{{ url('/trades/'.$trade->name.'/edit') }}">Edit</a></td>
-				<td class="trade-tools"><a id="trade-btn-delete" role="button" class="btn btn-danger" href="{{ url('/trades/'.$trade->name.'/delete') }}">Delete</a></td>
+				<td class="trade-tools"><a role="button" class="btn btn-success trade-btn-edit" href="{{ url('/trades/'.$trade->name.'/edit') }}"></a></td>
+				<td class="trade-tools"><a role="button" class="btn btn-danger trade-btn-delete" href="{{ url('/trades/'.$trade->name.'/delete') }}"></a></td>
 			</tr>
 		@endforeach()
 		</table>

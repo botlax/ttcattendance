@@ -5,38 +5,9 @@ body {
 	height:30px;
 }
 
-#attendance-table td ,#attendance-table th{
-	vertical-align: middle;
-}
-
-#attendance-table thead tr th{
-	text-align:center;
-}
-
-#attendance-table thead tr th:first-child{
-	width:40px;
-}
-
-#attendance-table thead tr th:nth-child(2){
-	width:150px;
-}
-
-#attendance-table thead tr th:nth-child(3){
-	width:80px;
-}
-
-#attendance-table thead tr th:last-child{
-	width:100px;
-}
-
-#attendance-table .site-row{
-	font-size: 10px;
-}
-
 #labor-btn-show, #labor-deleted-btn-show{
 	margin:10px 2%;
 	width:45%;
-
 }
 
 #labor-btn-add{
@@ -54,19 +25,35 @@ body {
 }
 
 #labor-table thead tr th:first-child{
-	width:10%;
+	width:5%;
 }
 
 #labor-table thead tr th:nth-child(2){
-	width:20%;
+	width:10%;
 }
 
 #labor-table thead tr th:nth-child(3){
-	width:40%;
+	width:25%;
 }
 
 #labor-table thead tr th:nth-child(4){
-	width:30%;
+	width:5%;
+}
+
+#labor-table thead tr th:nth-child(4){
+	width:5%;
+}
+
+#labor-table thead tr th:nth-child(4){
+	width:10%;
+}
+
+#labor-table thead tr th:nth-child(4){
+	width:15%;
+}
+
+#labor-table thead tr th:nth-child(4){
+	width:15%;
 }
 
 #labor-form-btn-search{
@@ -79,27 +66,11 @@ body {
 	width:65%;
 }
 
-.labor-btn-edit, .labor-btn-delete{
-	display: inline-block;
-	text-align: center;
-	vertical-align: middle;
-	width: 100%;
-	height: 100%;
-}
-
-.labor-btn-edit span,.labor-btn-delete span{
-	vertical-align: middle;
-}
-
 .attendance-name-list{
 	display: inline-block;
 	width:100%;
 }
 
-
-#site-btn-edit,#site-btn-delete,#trade-btn-edit,#trade-btn-delete{
-	width: 100%;
-}
 
 #site-btn-add,#trade-btn-add{
 	margin-bottom: 10px;
@@ -127,40 +98,130 @@ body {
 	margin-top:30px;
 }
 
+#attendance-table{
+	margin: 0 auto;
+	border-collapse: collapse;
+	width: 100%;
+	table-layout: fixed;
+}
+
+#attendance-table, #attendance-table th, #attendance-table td {
+    border: 1px solid #777;
+    text-align: center;
+}
+
+#attendance-table th{
+	text-align: center;
+	background-color: #0033CC;
+	color:#fff;
+}
+
+#attendance-table td:last-child{
+	text-align: right;
+	padding:0 5px;
+	background-color: #FF1919;
+	color:#fff;
+}
+
+#attendance-table .site-row{
+	font-size: 10px;
+}
+
+#attendance-table tr.table-stripe {
+   background-color: #ccc;
+}
+#attendance-table tr.labor-stripe:nth-child(even),#attendance-table tr.labor-stripe:nth-child(even) td{
+	background-color: #fff;
+	color: black;
+	text-align: center;
+}
+#attendance-table tr.labor-stripe:nth-child(odd),#attendance-table tr.labor-stripe:nth-child(odd) td {
+   background-color: #ccc;
+   color: black;
+   text-align: center;
+}
+
+#attendance-table tr:first-child th:first-child{
+	width:50px;
+}
+#attendance-table tr:first-child th:nth-child(2){
+	width:110px;
+}
+#attendance-table tr:first-child th:nth-child(3){
+	width:70px;
+}
+#attendance-table tr:first-child th:nth-child(4){
+	width:100px;
+}
+.total-head{
+	width: 40px;
+}
+.salary-head{
+	width: 65px;
+}
+
 a[class^='att_entry']{
 	display: inline-block;
-	color:blue;
-	padding: 3px;	
+	color:black;
+	width: 25px;
+	padding: 5px 0;
+	text-align: center;
+	
 }
 a[class^='att_entry']:hover{
 	text-decoration: none;
+	background-color: #000;
+	color: #fff;
 }
 
-a[class^='att_entry']:visited{
-	color:blue;
-}
 a[class^='att_entry']:focus{
-	color:blue;
 	text-decoration: none;
 	outline: none;
 }
 
 .bordered-bottom{
-	border-bottom: 1px solid black !important;
+	border-bottom: 2px solid #555 !important;
 }
 
 .cell-bold{
 	font-weight:bold !important;
 	color:red;
 }
+.site-btn-delete,.trade-btn-delete,.labor-btn-delete,.holiday-btn-delete{
+	background-image: url('/images/glyph-delete.png');
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+}
+.site-btn-edit,.trade-btn-edit,.labor-btn-edit,.holiday-btn-edit{
+	background-image: url('/images/glyph-edit.png');
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+}
+.site-btn-delete,.trade-btn-delete,.site-btn-edit,.trade-btn-edit,.labor-btn-edit,.labor-btn-delete,.holiday-btn-edit,.holiday-btn-delete{
+	width: 100%;
+	display: inline-block;
+	height: 35px;
+}
+#trade-table td:last-child,#site-table td:last-child,#holiday-table td:last-child{
+	width: 12%;
+}
+#trade-table td:nth-child(2),#site-table td:nth-child(2),#holiday-table td:nth-child(2){
+	width: 12%;
+}
 
 #btn-make-xls{
+	display: inline-block;
+	width: 80px;
+	height: 40px;
+	background-image: url('/images/glyph-download.png');
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
 	margin-bottom: 10px;
-	border-bottom: 5px solid green;
+	border-bottom: 5px solid grey;
 }
 #btn-make-xls:active{
 	margin-top: 4px;
-	border-bottom: 1px solid green;
+	border-bottom: 1px solid grey;
 }
 
 .filled-up{
@@ -180,4 +241,85 @@ a[class^='att_entry']:focus{
 
 .show-att-btn{
 	margin:10px 0;
+}
+
+#search-form{
+	margin:15px 0;
+}
+
+input[name=ot],input[name=bot]{
+	width:10%;
+}
+
+.cancel,.done,.btn-remove,.btn-edit{
+	width:15%;
+}
+
+.submit-att{
+	width:20%;
+}
+
+.labor-name{
+	display: inline-block;
+	width:40%;
+	outline: 1px solid #999;
+	padding:3px 0;
+}
+
+.btn-att{
+	width:50%;
+}
+
+#filled-options a,#unfilled-options a{
+	display: inline-block;
+	border:1px solid #999;
+	border-radius: 15%;
+	padding:5px 8px;
+	margin-bottom: 10px;
+}
+
+#filled-options a:last-child{
+	margin-left: 20px;
+}
+
+#filled-options a:last-child:hover,#filled-options a:last-child:focus{
+	text-decoration: none;
+}
+
+div[data-id]{
+	margin-bottom: 5px;
+	text-align: center;
+}
+
+#tabs ul li{
+	text-align: center;
+	width:49%;
+}
+#tabs ul li a{
+	display: inline-block;
+	width: 100%;
+}
+#tabs ul li a:focus{
+	outline: none;
+}
+#tabs ul li:first-child a{
+	height: 40px;
+}
+
+.site-wrap{
+	margin-bottom: 10px;
+}
+
+.site-wrap a{
+	display: inline-block;
+	width: 100%;
+	height: 50px;
+	text-align: left;
+	line-height: 35px;
+	overflow: hidden;
+}
+
+/*Close button on jquery dialog*/
+.ui-dialog-titlebar-close {
+  visibility: hidden;
 }
