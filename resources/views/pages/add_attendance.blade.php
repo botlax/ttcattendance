@@ -94,7 +94,7 @@ Add Attendance
 					      success: function(data){
 					      		$('#unfilled').children().not('#unfilled-options').remove();
 					      	for(var i in data){
-					      		$('#unfilled').append('<div data-id="'+i+'"> <a role="button" data-site="{{$site}}" data-id="'+i+'" class="btn btn-default btn-att">'+i+' '+data[i]+'</a> <input disabled="true" type="text" name="ot" placeholder="ot" data-id="'+i+'" data-site="{{$site}}"/> <input disabled="true" type="text" name="bot" placeholder="bot" data-id="'+i+'" data-site="{{$site}}"/> <button data-id="'+i+'" data-site="{{$site}}" role="submit" class="btn btn-primary submit-att"><img src="/images/glyph-check.png"></button> </div>');
+					      		$('#unfilled').append('<div data-id="'+i+'"> <a role="button" data-site="{{$site}}" data-id="'+i+'" class="btn btn-default btn-att">'+i+' '+data[i]+'</a> <input disabled="true" type="text" name="ot" placeholder="ot" data-id="'+i+'" data-site="{{$site}}"/> <input disabled="true" type="text" name="bot" placeholder="bot" data-id="'+i+'" data-site="{{$site}}"/> <button disabled="true" data-id="'+i+'" data-site="{{$site}}" role="submit" class="btn btn-primary submit-att"><img src="/images/glyph-check.png"></button> </div>');
 					      		//alert(i+'-'+data[i]);
 					      	}
 					      },
