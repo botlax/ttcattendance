@@ -262,6 +262,7 @@ input[name=ot],input[name=bot]{
 .labor-name{
 	display: inline-block;
 	width:40%;
+	height:30px;
 	outline: 1px solid #999;
 	padding:3px 0;
 	overflow: hidden;
@@ -274,6 +275,11 @@ input[name=ot],input[name=bot]{
 	width:50%;
 	overflow:hidden;
 	text-align:left;
+}
+
+#filled input[type=text],#unfilled input[type=text]{
+	display: inline-block;
+	height: 35px;
 }
 
 #filled-options a,#unfilled-options a{
