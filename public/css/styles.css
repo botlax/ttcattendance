@@ -267,10 +267,13 @@ input[name=ot],input[name=bot]{
 	overflow: hidden;
 	position: relative;
 	top:10px;
+	text-align:left;
 }
 
 .btn-att{
 	width:50%;
+	overflow:hidden;
+	text-align:left;
 }
 
 #filled-options a,#unfilled-options a{
