@@ -236,7 +236,6 @@ Add Attendance
 
 			$(this).toggleClass('btn-primary');
 			$('input[name=ot][data-id='+id+']').toggleDisabled();
-			$('input[name=ot][data-id='+id+']').focus();
 			$('input[name=bot][data-id='+id+']').toggleDisabled();
 			$('button[data-id='+id+']').toggleDisabled();
 
