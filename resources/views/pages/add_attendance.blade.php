@@ -115,7 +115,7 @@ Add Attendance
 					      success: function(data){
 					      		$('#filled').children().not('#filled-options').remove();
 						      	for(var i in data){
-						      		$('#filled').append('<div data-id="'+i+'"> <span class="labor-name">'+i+' '+data[i].name+'</span> <input disabled="true" type="text" name="ot" value="'+data[i].ot+'" placeholder="ot" data-id="'+i+'" data-site="{{$site}}"/> <input disabled="true" type="text" name="bot" value="'+data[i].bot+'" placeholder="bot" data-id="'+i+'" data-site="{{$site}}"/> <button data-id="'+i+'" class="btn btn-default btn-edit"><img src="/images/glyph-edit.png"></button> <button data-id="'+i+'" class="btn btn-default btn-remove"><img src="/images/glyph-remove.png"></button> </div>');
+						      		$('#filled').append('<div data-id="'+i+'"> <span class="labor-name">'+i+'('+data[i].name+')</span> <input disabled="true" type="text" name="ot" value="'+data[i].ot+'" placeholder="ot" data-id="'+i+'" data-site="{{$site}}"/> <input disabled="true" type="text" name="bot" value="'+data[i].bot+'" placeholder="bot" data-id="'+i+'" data-site="{{$site}}"/> <button data-id="'+i+'" class="btn btn-default btn-edit"><img src="/images/glyph-edit.png"></button> <button data-id="'+i+'" class="btn btn-default btn-remove"><img src="/images/glyph-remove.png"></button> </div>');
 						      		//alert(i+'-'+data[i]);
 						      	}
 					      },
@@ -212,7 +212,7 @@ Add Attendance
 			      success: function(data){
 				      		$('#filled').children().not('#filled-options').remove();
 				      	for(var i in data){
-				      		$('#filled').append('<div data-id="'+i+'"> <span class="labor-name">'+i+' '+data[i].name+'</span> <input disabled="true" type="text" name="ot" value="'+data[i].ot+'" placeholder="ot" data-id="'+i+'" data-site="{{$site}}"/> <input disabled="true" type="text" name="bot" value="'+data[i].bot+'" placeholder="bot" data-id="'+i+'" data-site="{{$site}}"/> <button data-id="'+i+'" class="btn btn-default btn-edit"><img src="/images/glyph-edit.png"></button> <button data-id="'+i+'" class="btn btn-default btn-remove"><img src="/images/glyph-remove.png"></button> </div>');
+				      		$('#filled').append('<div data-id="'+i+'"> <span class="labor-name">'+i+'('+data[i].name+')</span> <input disabled="true" type="text" name="ot" value="'+data[i].ot+'" placeholder="ot" data-id="'+i+'" data-site="{{$site}}"/> <input disabled="true" type="text" name="bot" value="'+data[i].bot+'" placeholder="bot" data-id="'+i+'" data-site="{{$site}}"/> <button data-id="'+i+'" class="btn btn-default btn-edit"><img src="/images/glyph-edit.png"></button> <button data-id="'+i+'" class="btn btn-default btn-remove"><img src="/images/glyph-remove.png"></button> </div>');
 				      		//alert(i+'-'+data[i]);
 				      	}
 				  },
