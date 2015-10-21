@@ -500,6 +500,7 @@ class AttendanceController extends Controller
             }
             else{
                 $entry->pivot->site = $input;
+                $result = 6;
             }
         }
 
