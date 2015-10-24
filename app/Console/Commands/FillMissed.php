@@ -62,7 +62,7 @@ class FillMissed extends Command
                     $att->pivot->attended = $att->holiday == 1 ? 1 : 0;
                     $att->pivot->ot = 0;
                     $att->pivot->bot = 0;
-                    $att->pivot->site = '—';
+                    $att->pivot->site = $labor->site->code;
                     $att->pivot->save();
                 }
             }

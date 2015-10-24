@@ -590,7 +590,7 @@ class AttendanceController extends Controller
                 }
                 else{
                     $labor_att[$labor->employee_no]['attended'][$dateFromCarbon->format('Y-m-d')] = '—';
-                }   
+                }
 
                 if(!is_null($att_entry) && $att_entry->pivot->attended == '1'){
                     if($showAbsent){
@@ -600,14 +600,28 @@ class AttendanceController extends Controller
                     }
                     else{
                         $labor_att[$labor->employee_no]['ot'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->ot;
-                        $labor_att[$labor->employee_no]['bot'][$dateFromCarbon->format('Y-m-d')] = round($att_entry->pivot->bot,2);
+                        $labor_att[$labor->employee_no]['bot'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->bot;
                         $labor_att[$labor->employee_no]['site'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->site;
 
                         $ot_count += floatval($att_entry->pivot->ot);
                         $bot_count += intval($att_entry->pivot->bot);
                     }
                 }
-                elseif(is_null($att_entry) || $att_entry->pivot->attended == '0'){
+                elseif(!is_null($att_entry) && $att_entry->pivot->attended == '0'){
+                    if($showAbsent){
+                        $labor_att[$labor->employee_no]['attended'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->attended;
+                        $labor_att[$labor->employee_no]['ot'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->ot;
+                        $labor_att[$labor->employee_no]['bot'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->bot;
+                        $labor_att[$labor->employee_no]['site'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->site;
+                    }
+                    else{
+                        $labor_att[$labor->employee_no]['attended'][$dateFromCarbon->format('Y-m-d')] = '—';
+                        $labor_att[$labor->employee_no]['ot'][$dateFromCarbon->format('Y-m-d')] = '—';
+                        $labor_att[$labor->employee_no]['bot'][$dateFromCarbon->format('Y-m-d')] = '—';
+                        $labor_att[$labor->employee_no]['site'][$dateFromCarbon->format('Y-m-d')] = '—';
+                    }
+                }
+                elseif(is_null($att_entry)){
                     $labor_att[$labor->employee_no]['attended'][$dateFromCarbon->format('Y-m-d')] = '—';
                     $labor_att[$labor->employee_no]['ot'][$dateFromCarbon->format('Y-m-d')] = '—';
                     $labor_att[$labor->employee_no]['bot'][$dateFromCarbon->format('Y-m-d')] = '—';

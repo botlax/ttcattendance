@@ -15,22 +15,34 @@ Attendance
 @stop
 
 @section('content')
-<div id="filter-attendance-wrap">
-{!! Form::open(['method'=>'GET','route' => 'filterAttendance','id'=>'filter-form','class' => 'form-inline']) !!}
+
+	<div class="text-left">
+		<a role="button" class="btn btn-default" id="btn-filter-att" href="#"></a>
+		<a role="button" class="btn btn-default" id="btn-make-xls" href="#"></a>
+	</div>
+
+	<div id="attendance-table-wrap">
+		<table id="attendance-table">
+			
+		</table>
+	</div>
+
+<div id="dialog-form-option" title="Filter">
+	{!! Form::open(['method'=>'GET','route' => 'filterAttendance','id'=>'filter-form']) !!}
 
 	<div class="form-group">
 		{!! Form::label('employee_no','Employee ID: ') !!}
-		{!! Form::text('employee_no',null) !!}
+		{!! Form::text('employee_no',null,['class'=>'form-control filter-form-text']) !!}
 	</div>
 
 	<div class="form-group">
 		<label for="date-from">From: </label>
-		<input type="text" name="date-from" id="date-from" value="{{date('Y-m-d')}}" size="15">
+		<input type="text" name="date-from" id="date-from" class="form-control filter-form-text" value="{{date('Y-m-d')}}" size="15">
 	</div>
 
 	<div class="form-group">
 		<label for="date-from">To: </label>
-		<input type="text" name="date-to" id="date-to" value="{{date('Y-m-d')}}" size="15">
+		<input type="text" name="date-to" id="date-to" class="form-control filter-form-text" value="{{date('Y-m-d')}}" size="15">
 	</div>
 
 	<div class="form-group">
@@ -49,101 +61,14 @@ Attendance
 
 	<div class="form-group">
 		{!! Form::checkbox('view-deleted',1) !!}
-		{!! Form::label('view-deleted','Include Deleted Employees') !!}
+		{!! Form::label('view-deleted','Include Deleted Employees',['class'=>'cb-label']) !!}
 	</div>
 	<div class="form-group">
 		{!! Form::checkbox('view-absent',1) !!}
-		{!! Form::label('view-absent','View Absentees Only') !!}
+		{!! Form::label('view-absent','View Absentees Only',['class'=>'cb-label']) !!}
 	</div>
 
 {!! Form::close() !!}
-</div>
-
-@include('partials._error')
-
-@if(isset($labors))
-	<div class="text-center">
-		<h1><small>Attendance for the month of </small><mark>{{ $month }} {{ $year }}</mark></h1>
-	</div>
-	<!--
-		<table id="attendance-table">
-			<tr>
-				<th class="bordered-bottom">ID</th>
-				<th class="bordered-bottom">Name</th>
-				<th class="bordered-bottom">Trade</th>
-				<th class="bordered-bottom"></th>
-			@for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay())
-				<th class="bordered-bottom">{{$dateFrom->format('d')}}</th>
-			@endfor
-			
-				<th class="bordered-bottom total-head">Total</th>
-				<th class="bordered-bottom salary-head">Salary</th>
-			</tr>
-		@foreach($labors as $labor)
-			<tr class="labor-stripe">
-				<td class="bordered-bottom" rowspan="5">{{ $labor->employee_no }}</td>
-				<td class="bordered-bottom" rowspan="5" class="text-center">{{ $labor->name }}</td>
-				<td class="bordered-bottom" rowspan="5">{{ $labor->trade->name }}</td>
-			</tr>
-			<tr>
-				<td>Attended</td>
-				
-				@foreach($labor_att[$labor->employee_no]['attended'] as $key => $attended)
-				<td>
-					<a class="att_entry_select" data-field="attended" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/attended')}}">{{$attended}}</a>		
-				</td>
-				@endforeach
-				<td>{{ $total[$labor->employee_no]['attended']}}</td>
-				<td>{{ $salary[$labor->employee_no]['attended']}}</td>
-			</tr>
-			<tr class="table-stripe">
-				<td>Overtime(OT)</td>
-				
-				@foreach($labor_att[$labor->employee_no]['ot'] as $key => $ot)
-				<td>
-					<a class="att_entry_text" data-field="ot" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/ot')}}">{{$ot}}</a>
-				</td>
-				@endforeach
-				<td>{{$total[$labor->employee_no]['ot']}}</td>
-				<td>{{ $salary[$labor->employee_no]['ot']}}</td>
-			</tr>
-			<tr>
-				<td>Bonus OT</td>
-
-				@foreach($labor_att[$labor->employee_no]['bot'] as $key => $bot)
-				<td>
-					<a class="att_entry_text" data-field="bot" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/bot')}}">{{$bot}}</a>
-				</td>
-				@endforeach
-				<td>{{$total[$labor->employee_no]['bot']}}</td>
-				<td>{{ $salary[$labor->employee_no]['bot']}}</td>
-			</tr>
-			<tr class="table-stripe">
-				<td class="bordered-bottom">Site</td>
-				@foreach($labor_att[$labor->employee_no]['site'] as $key => $site)
-				<td class="site-row bordered-bottom">
-					<a class="att_entry_select" data-field="site" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/site')}}">{{$site}}</a>
-				</td>
-				@endforeach
-				<td class="bordered-bottom"></td>
-				<td class="bordered-bottom cell-bold">{{ $salary[$labor->employee_no]['total']}}</td>
-			</tr>			
-		@endforeach
-		</table>
-		-->
-@endif
-	<div class="text-left" style="height:50px">
-		<a role="button" class="btn btn-default" id="btn-make-xls" href="{{$_SERVER['REQUEST_URI']}}&makesheet=1"></a>
-	</div>
-
-	<div id="attendance-table-wrap">
-		<table id="attendance-table">
-			
-		</table>
-	</div>
-
-<div id="dialog-form-option" title="Filter">
- 
 
 </div>
 
@@ -261,6 +186,18 @@ Attendance
 			    $( "#dialog-form-text" ).dialog("close");
 			} 		    
 		});
+		$( "#dialog-form-option" ).dialog({ 
+			autoOpen: false,
+			resizable: false,
+		    height:520,
+		    width:400,
+		    modal: true,
+		    buttons: {
+		        Cancel: function() {
+		            $( this ).dialog( "close" );
+		        }
+	      	}
+		});
 		$( "#dialog-form-text" ).dialog({ 
 			autoOpen: false,
 			resizable: false,
@@ -285,6 +222,11 @@ Attendance
 	      	}
 		});
 		
+		$('#btn-filter-att').click(function(evt){
+			evt.preventDefault();
+			$( "#dialog-form-option" ).dialog( "open" );
+		});
+
 		$(document).on('click',"a[class^='att_entry']",function(evt) {
 			evt.preventDefault();
 			if($(this).attr('class') == 'att_entry_select'){
@@ -486,7 +428,7 @@ Attendance
 
 						    		$('#attendance-table').append('<tr class="labor-stripe" id="labor'+data.labor[i].employee_no+'"></tr>');
 
-						    		$('#labor'+data.labor[i].employee_no).append('<td class="bordered-bottom" rowspan="5">'+data.labor[i].employee_no+'</td><td class="bordered-bottom" rowspan="5" class="text-center">'+data.labor[i].name+'</td><td class="bordered-bottom" rowspan="5">'+data.labor[i].trade_id+'</td>');
+						    		$('#labor'+data.labor[i].employee_no).append('<td class="bordered-bottom" rowspan="5">'+data.labor[i].employee_no+'</td><td class="bordered-bottom" rowspan="5" class="text-center">'+data.labor[i].name+'</td><td class="bordered-bottom" rowspan="5">'+data.trade[i]+'</td>');
 						    		
 						    		//attended
 						    		$('#attendance-table').append('<tr id="att'+data.labor[i].employee_no+'"></tr>');

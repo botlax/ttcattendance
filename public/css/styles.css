@@ -220,7 +220,21 @@ a[class^='att_entry']:focus{
 	width: 12%;
 }
 
-#btn-make-xls{
+#filter-form label{
+	display: inline-block;
+	width: 160px;
+	text-align: right;
+	padding: 0 10px;
+}
+#filter-form label.cb-label{
+	width: 300px;
+	text-align: left;
+}
+.filter-form-text{
+	width: 150px !important;
+	display: inline-block !important;
+}
+#btn-make-xls,#btn-filter-att{
 	display: inline-block;
 	width: 80px;
 	height: 40px;
@@ -230,11 +244,20 @@ a[class^='att_entry']:focus{
 	margin-top: 20px;
 	border-bottom: 5px solid grey;
 }
-#btn-make-xls:active{
-	margin-top: 24px;
+#btn-make-xls:active,#btn-filter-att:active{
+	margin-top: 20px;
 	border-bottom: 1px solid grey;
 }
-
+#btn-make-xls:focus,#btn-filter-att:focus{
+	outline: none;
+	background-color: #fff;
+	border:1px solid #ccc;
+	border-bottom: 5px solid grey;
+}
+#btn-filter-att{
+	background-image: url('/images/glyph-filter.png');
+	margin-right: 10px;
+}
 .filled-up{
 	color:white !important;
 	font-weight: bold !important;
