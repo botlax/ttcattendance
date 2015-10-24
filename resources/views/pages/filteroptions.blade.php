@@ -17,34 +17,30 @@ Attendance
 @section('content')
 <div id="filter-attendance-wrap">
 {!! Form::open(['method'=>'GET','route' => 'filterAttendance','id'=>'filter-form','class' => 'form-inline']) !!}
-<!--
-	<div class="form-group">
-		{!! Form::label('date_from','From: ') !!}
-		{!! Form::input('date','date_from',null) !!}
-	</div>
-	<div class="form-group">
-		{!! Form::label('date_to','To: ') !!}
-		{!! Form::input('date','date_to',null) !!}
-	</div>
--->
+
 	<div class="form-group">
 		{!! Form::label('employee_no','Employee ID: ') !!}
 		{!! Form::text('employee_no',null) !!}
 	</div>
 
 	<div class="form-group">
-		{!! Form::label('month','Month:') !!}
-		{!! Form::select('month',$months,null,['id' => 'filter-months','style'=>'width: 130px']) !!}
+		<label for="date-from">From: </label>
+		<input type="text" name="date-from" id="date-from" value="{{date('Y-m-d')}}" size="15">
 	</div>
 
 	<div class="form-group">
-		{!! Form::label('year','Year:') !!}
-		{!! Form::select('year',$years,null,['id' => 'filter-years','style'=>'width: 90px']) !!}
+		<label for="date-from">To: </label>
+		<input type="text" name="date-to" id="date-to" value="{{date('Y-m-d')}}" size="15">
+	</div>
+
+	<div class="form-group">
+		{!! Form::label('trade_list[]','Trade:') !!}
+		{!! Form::select('trade_list[]',$trades,null,['multiple','id' => 'filter-trades','style'=>'width: 150px']) !!}
 	</div>
 
 	<div class="form-group">
 		{!! Form::label('site_list[]','Site:') !!}
-		{!! Form::select('site_list[]',$sites,null,['multiple','id' => 'filter-sites','style'=>'width: 100px']) !!}
+		{!! Form::select('site_list[]',$sites,null,['multiple','id' => 'filter-sites','style'=>'width: 150px']) !!}
 	</div>
 
 	<div class="form-group">
@@ -69,9 +65,7 @@ Attendance
 	<div class="text-center">
 		<h1><small>Attendance for the month of </small><mark>{{ $month }} {{ $year }}</mark></h1>
 	</div>
-	<div class="text-left" style="height:50px">
-		<a role="button" class="btn btn-default" id="btn-make-xls" href="{{$_SERVER['REQUEST_URI']}}&makesheet=1"></a>
-	</div>
+	<!--
 		<table id="attendance-table">
 			<tr>
 				<th class="bordered-bottom">ID</th>
@@ -81,7 +75,7 @@ Attendance
 			@for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay())
 				<th class="bordered-bottom">{{$dateFrom->format('d')}}</th>
 			@endfor
-			<?php $dateFrom = Carbon\Carbon::parse('1-'.$month.'-'.$year) ?>
+			
 				<th class="bordered-bottom total-head">Total</th>
 				<th class="bordered-bottom salary-head">Salary</th>
 			</tr>
@@ -93,7 +87,7 @@ Attendance
 			</tr>
 			<tr>
 				<td>Attended</td>
-				<?php $attendance_total = 0; ?>
+				
 				@foreach($labor_att[$labor->employee_no]['attended'] as $key => $attended)
 				<td>
 					<a class="att_entry_select" data-field="attended" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/attended')}}">{{$attended}}</a>		
@@ -104,7 +98,7 @@ Attendance
 			</tr>
 			<tr class="table-stripe">
 				<td>Overtime(OT)</td>
-				<?php $ot_total = 0; ?>
+				
 				@foreach($labor_att[$labor->employee_no]['ot'] as $key => $ot)
 				<td>
 					<a class="att_entry_text" data-field="ot" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/ot')}}">{{$ot}}</a>
@@ -115,7 +109,7 @@ Attendance
 			</tr>
 			<tr>
 				<td>Bonus OT</td>
-				<?php $bot_total = 0; ?>
+
 				@foreach($labor_att[$labor->employee_no]['bot'] as $key => $bot)
 				<td>
 					<a class="att_entry_text" data-field="bot" data-date="{{$key}}" data-id="{{$labor->id}}" href="{{url('attendance/'.$key.'/'.$labor->employee_no.'/bot')}}">{{$bot}}</a>
@@ -136,8 +130,22 @@ Attendance
 			</tr>			
 		@endforeach
 		</table>
+		-->
 @endif
+	<div class="text-left" style="height:50px">
+		<a role="button" class="btn btn-default" id="btn-make-xls" href="{{$_SERVER['REQUEST_URI']}}&makesheet=1"></a>
+	</div>
 
+	<div id="attendance-table-wrap">
+		<table id="attendance-table">
+			
+		</table>
+	</div>
+
+<div id="dialog-form-option" title="Filter">
+ 
+
+</div>
 
 <div id="dialog-form-text" title="Edit">
  
@@ -168,12 +176,10 @@ Attendance
 		$("#filter-sites").select2({
 			placeholder: 'Select site'
 		}); 
-		$("#filter-months").select2({
-			placeholder: 'Select month'
+		$("#filter-trades").select2({
+			placeholder: 'Select trade'
 		});
-		$("#filter-years").select2({
-			placeholder: 'Select year'
-		});
+		
 		 var rules = {
          'text-entry': {
              number: true
@@ -196,7 +202,7 @@ Attendance
 		$('#select-form').submit(function(e){
 			e.preventDefault();
 			$.ajax({
-		      url: 'update',
+		      url: 'attendance/update',
 		      dataType:'json',
 		      type: "POST",
 		      data: {'entry':$('select[name=select-entry]').val(),'date':$('input[name=date]').val(),'id':$('input[name=id]').val(),'field':$('input[name=field]').val()},
@@ -279,7 +285,7 @@ Attendance
 	      	}
 		});
 		
-		$("a[class^='att_entry']").click(function(evt) {
+		$(document).on('click',"a[class^='att_entry']",function(evt) {
 			evt.preventDefault();
 			if($(this).attr('class') == 'att_entry_select'){
 				var entry = $(this).html();
@@ -288,7 +294,7 @@ Attendance
 				var id = $(this).attr('data-id');
 				var field = $(this).attr('data-field');
 				$.ajax({
-					url: 'getselect',
+					url: 'attendance/getselect',
 				    dataType:'json',
 				    type: "POST",
 				    data: {'field':field},
@@ -321,10 +327,7 @@ Attendance
 				$('input[name=field]').val(field);
 			}
 		});
-		$('#filter-form').submit(function(){
-			$(".container-fluid").fadeOut('1500');
-			$('body').html('<div id="dialog-loading" class="text-center"><img src="https://d13yacurqjgara.cloudfront.net/users/12755/screenshots/1037374/hex-loader2.gif"/></div>');
-		});
+	
 		var fewSeconds = 20;
 		$('#btn-make-xls').click(function(){
 		    var btn = $(this);
@@ -336,6 +339,216 @@ Attendance
 		        btn.fadeIn(300);
 		    }, fewSeconds*1000);
 		});
+
+
+		$("#date-from").datepicker({
+			dateFormat: 'yy-mm-dd',
+	        numberOfMonths: 2,
+	        onSelect: function(selected) {
+	        	$("#date-to").datepicker("option","minDate", selected);
+	        }
+   		});
+	    $("#date-to").datepicker({
+	    	dateFormat: 'yy-mm-dd',
+	        numberOfMonths: 2,
+	        onSelect: function(selected) {
+	            $("#date-from").datepicker("option","maxDate", selected);
+	        }
+	    });
+
+	    var skip,take,filterComplete,view_deleted,view_absent,date_from,date_to,employee_no,site_list,trade_list;
+		$('#filter-form').submit(function(e){
+			e.preventDefault();
+			skip = 0; take = 20; filterComplete = false;
+
+			if($('input[name=view-deleted').is(':checked')){
+				view_deleted = $('input[name=view-deleted').val();
+			}
+			else{
+				view_deleted = 0;
+			}
+			if($('input[name=view-absent').is(':checked')){
+				view_absent = $('input[name=view-absent').val();
+			}
+			else{
+				view_absent = 0;
+			}
+			date_from = $('#date-from').val();
+			date_to = $('#date-to').val();
+			employee_no = $('#employee_no').val();
+			site_list = $('#filter-sites').val();
+			trade_list = $('#filter-trades').val();
+			//alert(view_absent);
+
+			$.ajax({
+				url: 'attendance/filter',
+			    dataType:'json',
+			    type: "POST",
+			    data: {'view_deleted':view_deleted,'view_absent':view_absent,'date_from':date_from,'date_to':date_to,'employee_no':employee_no,'site_list':site_list,'trade_list':trade_list,'skip':skip,'take':take},
+			    success: function(data){
+			    	$('#attendance-table').html('');
+			    	//$('body').append(data);
+
+			    	var dateFrom = new Date(data.dateFrom);
+					var dateTo = new Date(data.dateTo);
+
+					$('#attendance-table').append('<tr id="table-head"></tr>');
+
+					$('#table-head').append('<th class="bordered-bottom">ID</th><th class="bordered-bottom">Name</th><th class="bordered-bottom">Trade</th><th class="bordered-bottom"></th>');
+
+					for (dateFrom; dateFrom <= dateTo; dateFrom.setDate(dateFrom.getDate() + 1)) {
+					    $('#table-head').append('<th class="bordered-bottom">'+("0" + dateFrom.getDate()).slice(-2)+'</th>');
+					}
+					$('#table-head').append('<th class="bordered-bottom total-head">Total</th><th class="bordered-bottom salary-head">Salary</th>');
+
+			    	//a complicated process---------------------------------------------
+
+			    	for(var i in data.labor){
+
+			    		$('#attendance-table').append('<tr class="labor-stripe" id="labor'+data.labor[i].employee_no+'"></tr>');
+
+			    		$('#labor'+data.labor[i].employee_no).append('<td class="bordered-bottom" rowspan="5">'+data.labor[i].employee_no+'</td><td class="bordered-bottom" rowspan="5" class="text-center">'+data.labor[i].name+'</td><td class="bordered-bottom" rowspan="5">'+data.trade[i]+'</td>');
+			    		
+			    		//attended
+			    		$('#attendance-table').append('<tr id="att'+data.labor[i].employee_no+'"></tr>');
+
+			    		$('#att'+data.labor[i].employee_no).append('<td>Attended</td>');
+
+			    		for(var att in data.labor_att[data.labor[i].employee_no]['attended']){
+			    			$('#att'+data.labor[i].employee_no).append('<td><a class="att_entry_select" data-field="attended" data-date="'+att+'" data-id="'+data.labor[i].id+'" href="attendance/'+att+'/'+data.labor[i].employee_no+'/attended">'+data.labor_att[data.labor[i].employee_no]['attended'][att]+'</a></td>');
+			    		}
+			    		$('#att'+data.labor[i].employee_no).append('<td>'+data.total[data.labor[i].employee_no]['attended']+'</td>');
+			    		$('#att'+data.labor[i].employee_no).append('<td>'+data.salary[data.labor[i].employee_no]['attended']+'</td>');
+
+			    		//overtime
+			    		$('#attendance-table').append('<tr class="labor-stripe" id="ot'+data.labor[i].employee_no+'"></tr>');
+
+			    		$('#ot'+data.labor[i].employee_no).append('<td>Overtime (OT)</td>');
+
+			    		for(var ot in data.labor_att[data.labor[i].employee_no]['ot']){
+			    			$('#ot'+data.labor[i].employee_no).append('<td><a class="att_entry_text" data-field="ot" data-date="'+ot+'" data-id="'+data.labor[i].id+'" href="attendance/'+ot+'/'+data.labor[i].employee_no+'/ot">'+data.labor_att[data.labor[i].employee_no]['ot'][ot]+'</a></td>');
+			    		}
+			    		$('#ot'+data.labor[i].employee_no).append('<td>'+data.total[data.labor[i].employee_no]['ot']+'</td>');
+			    		$('#ot'+data.labor[i].employee_no).append('<td>'+data.salary[data.labor[i].employee_no]['ot']+'</td>');
+
+			    		//bonus overtime
+			    		$('#attendance-table').append('<tr id="bot'+data.labor[i].employee_no+'"></tr>');
+
+			    		$('#bot'+data.labor[i].employee_no).append('<td>Bonus OT</td>');
+
+			    		for(var bot in data.labor_att[data.labor[i].employee_no]['bot']){
+			    			$('#bot'+data.labor[i].employee_no).append('<td><a class="att_entry_text" data-field="bot" data-date="'+bot+'" data-id="'+data.labor[i].id+'" href="attendance/'+bot+'/'+data.labor[i].employee_no+'/bot">'+data.labor_att[data.labor[i].employee_no]['bot'][bot]+'</a></td>');
+			    		}
+			    		$('#bot'+data.labor[i].employee_no).append('<td>'+data.total[data.labor[i].employee_no]['bot']+'</td>');
+			    		$('#bot'+data.labor[i].employee_no).append('<td>'+data.salary[data.labor[i].employee_no]['bot']+'</td>');
+
+			    		//site
+			    		$('#attendance-table').append('<tr class="labor-stripe" id="site'+data.labor[i].employee_no+'"></tr>');
+
+			    		$('#site'+data.labor[i].employee_no).append('<td class="bordered-bottom">Site</td>');
+
+			    		for(var site in data.labor_att[data.labor[i].employee_no]['site']){
+			    			$('#site'+data.labor[i].employee_no).append('<td class="site-row bordered-bottom"><a class="att_entry_select" data-field="site" data-date="'+site+'" data-id="'+data.labor[i].id+'" href="attendance/'+site+'/'+data.labor[i].employee_no+'/site">'+data.labor_att[data.labor[i].employee_no]['site'][site]+'</a></td>');
+			    		}
+			    		$('#site'+data.labor[i].employee_no).append('<td class="bordered-bottom"></td>');
+			    		$('#site'+data.labor[i].employee_no).append('<td class="bordered-bottom cell-bold">'+data.salary[data.labor[i].employee_no]['total']+'</td>');
+			    	}
+			    	//end of a really complicated process-------------------------------
+			    	skip = skip+20;
+			    },
+			    error: function(ts) { var win = window.open('', '_self');
+					win.document.getElementsByTagName('Body')[0].innerText = ts.responseText; }
+			});
+		});
+
+		//ajax filter
+		$('#attendance-table-wrap').on('scroll', function() {
+
+	        if($(this).scrollTop() + $(this).innerHeight()-15 >= this.scrollHeight) {
+	        	//alert(date_from);
+	        	if(!filterComplete){
+		            
+			        $.ajax({
+						url: 'attendance/filter',
+					    dataType:'json',
+					    type: "POST",
+					    data: {'view_deleted':view_deleted,'view_absent':view_absent,'date_from':date_from,'date_to':date_to,'employee_no':employee_no,'site_list':site_list,'trade_list':trade_list,'skip':skip,'take':take},
+					    beforeSend: function ( xhr ) {
+			               //Add your image loader here
+			            },
+					    success: function(data){
+					    	if(data.filterComplete != 'true'){
+					    		//alert(data.filterComplete);
+					      		skip = skip+20;
+
+					      		//another complicated process------------------------------------
+					      		for(var i in data.labor){
+
+						    		$('#attendance-table').append('<tr class="labor-stripe" id="labor'+data.labor[i].employee_no+'"></tr>');
+
+						    		$('#labor'+data.labor[i].employee_no).append('<td class="bordered-bottom" rowspan="5">'+data.labor[i].employee_no+'</td><td class="bordered-bottom" rowspan="5" class="text-center">'+data.labor[i].name+'</td><td class="bordered-bottom" rowspan="5">'+data.labor[i].trade_id+'</td>');
+						    		
+						    		//attended
+						    		$('#attendance-table').append('<tr id="att'+data.labor[i].employee_no+'"></tr>');
+
+						    		$('#att'+data.labor[i].employee_no).append('<td>Attended</td>');
+
+						    		for(var att in data.labor_att[data.labor[i].employee_no]['attended']){
+						    			$('#att'+data.labor[i].employee_no).append('<td><a class="att_entry_select" data-field="attended" data-date="'+att+'" data-id="'+data.labor[i].id+'" href="attendance/'+att+'/'+data.labor[i].employee_no+'/attended">'+data.labor_att[data.labor[i].employee_no]['attended'][att]+'</a></td>');
+						    		}
+						    		$('#att'+data.labor[i].employee_no).append('<td>'+data.total[data.labor[i].employee_no]['attended']+'</td>');
+						    		$('#att'+data.labor[i].employee_no).append('<td>'+data.salary[data.labor[i].employee_no]['attended']+'</td>');
+
+						    		//overtime
+						    		$('#attendance-table').append('<tr class="labor-stripe" id="ot'+data.labor[i].employee_no+'"></tr>');
+
+						    		$('#ot'+data.labor[i].employee_no).append('<td>Overtime (OT)</td>');
+
+						    		for(var ot in data.labor_att[data.labor[i].employee_no]['ot']){
+						    			$('#ot'+data.labor[i].employee_no).append('<td><a class="att_entry_text" data-field="ot" data-date="'+ot+'" data-id="'+data.labor[i].id+'" href="attendance/'+ot+'/'+data.labor[i].employee_no+'/ot">'+data.labor_att[data.labor[i].employee_no]['ot'][ot]+'</a></td>');
+						    		}
+						    		$('#ot'+data.labor[i].employee_no).append('<td>'+data.total[data.labor[i].employee_no]['ot']+'</td>');
+						    		$('#ot'+data.labor[i].employee_no).append('<td>'+data.salary[data.labor[i].employee_no]['ot']+'</td>');
+
+						    		//bonus overtime
+						    		$('#attendance-table').append('<tr id="bot'+data.labor[i].employee_no+'"></tr>');
+
+						    		$('#bot'+data.labor[i].employee_no).append('<td>Bonus OT</td>');
+
+						    		for(var bot in data.labor_att[data.labor[i].employee_no]['bot']){
+						    			$('#bot'+data.labor[i].employee_no).append('<td><a class="att_entry_text" data-field="bot" data-date="'+bot+'" data-id="'+data.labor[i].id+'" href="attendance/'+bot+'/'+data.labor[i].employee_no+'/bot">'+data.labor_att[data.labor[i].employee_no]['bot'][bot]+'</a></td>');
+						    		}
+						    		$('#bot'+data.labor[i].employee_no).append('<td>'+data.total[data.labor[i].employee_no]['bot']+'</td>');
+						    		$('#bot'+data.labor[i].employee_no).append('<td>'+data.salary[data.labor[i].employee_no]['bot']+'</td>');
+
+						    		//site
+						    		$('#attendance-table').append('<tr class="labor-stripe" id="site'+data.labor[i].employee_no+'"></tr>');
+
+						    		$('#site'+data.labor[i].employee_no).append('<td class="bordered-bottom">Site</td>');
+
+						    		for(var site in data.labor_att[data.labor[i].employee_no]['site']){
+						    			$('#site'+data.labor[i].employee_no).append('<td class="site-row bordered-bottom"><a class="att_entry_select" data-field="site" data-date="'+site+'" data-id="'+data.labor[i].id+'" href="attendance/'+site+'/'+data.labor[i].employee_no+'/site">'+data.labor_att[data.labor[i].employee_no]['site'][site]+'</a></td>');
+						    		}
+						    		$('#site'+data.labor[i].employee_no).append('<td class="bordered-bottom"></td>');
+						    		$('#site'+data.labor[i].employee_no).append('<td class="bordered-bottom cell-bold">'+data.salary[data.labor[i].employee_no]['total']+'</td>');
+						    	}
+						    	//end of a really complicat
+
+					      	}
+					      	else{
+					      		filterComplete = true;
+					      		//alert(filterComplete);
+					      	}
+					    },
+					    error: function(ts) { var win = window.open('', '_self');
+						win.document.getElementsByTagName('Body')[0].innerText = ts.responseText; }
+					});
+			    
+			    	//alert('yes!');
+			    }
+	        }
+	    })
+
 	});
 </script>
 @stop

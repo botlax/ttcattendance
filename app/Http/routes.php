@@ -36,6 +36,7 @@ Route::get('/attendance/list', ['uses' => 'AttendanceController@showSites']);
 
 //Ajax routes
 Route::post('/attendance/update', ['uses' => 'AttendanceController@updateAjaxEntry']);
+Route::post('/attendance/filter', ['uses' => 'AttendanceController@filterAjaxAttendance']);
 Route::post('/attendance/viewallunfilled', ['uses' => 'AttendanceController@viewAjaxAllUnfilled']);
 Route::post('/attendance/viewallfilled', ['uses' => 'AttendanceController@viewAjaxAllFilled']);
 Route::post('/attendance/addattendance', ['uses' => 'AttendanceController@addAjaxAtt']);

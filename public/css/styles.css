@@ -98,10 +98,16 @@ body {
 	margin-top:30px;
 }
 
+#attendance-table-wrap{
+	width: 100%;
+	overflow: scroll;
+	margin-top: 20px;
+	height: 470px;
+}
+
 #attendance-table{
 	margin: 0 auto;
 	border-collapse: collapse;
-	width: 100%;
 	table-layout: fixed;
 }
 
@@ -127,37 +133,37 @@ body {
 	font-size: 10px;
 }
 
-#attendance-table tr.table-stripe {
-   background-color: #ccc;
-}
-#attendance-table tr.labor-stripe:nth-child(even),#attendance-table tr.labor-stripe:nth-child(even) td{
-	background-color: #fff;
-	color: black;
-	text-align: center;
-}
-#attendance-table tr.labor-stripe:nth-child(odd),#attendance-table tr.labor-stripe:nth-child(odd) td {
-   background-color: #ccc;
-   color: black;
-   text-align: center;
+.labor-stripe td{
+	background-color: #ccc;
 }
 
-#attendance-table tr:first-child th:first-child{
-	width:50px;
+tr[id^=labor] td:last-child{
+	background-color: #ccc !important;
+	color: black !important;
+	text-align: center !important;
 }
-#attendance-table tr:first-child th:nth-child(2){
-	width:110px;
+
+tr[id^=labor]:nth-child(odd) td{
+	background-color: #fff !important;
 }
-#attendance-table tr:first-child th:nth-child(3){
-	width:70px;
+
+#table-head th:first-child{
+	min-width:50px;
 }
-#attendance-table tr:first-child th:nth-child(4){
-	width:100px;
+#table-head th:nth-child(2){
+	min-width:110px;
+}
+#table-head th:nth-child(3){
+	min-width:100px;
+}
+#table-head th:nth-child(4){
+	min-width:100px;
 }
 .total-head{
-	width: 40px;
+	min-width: 70px;
 }
 .salary-head{
-	width: 65px;
+	min-width: 100px;
 }
 
 a[class^='att_entry']{
@@ -166,7 +172,7 @@ a[class^='att_entry']{
 	width: 25px;
 	padding: 5px 0;
 	text-align: center;
-	
+	font-size: 10px;
 }
 a[class^='att_entry']:hover{
 	text-decoration: none;
@@ -179,13 +185,18 @@ a[class^='att_entry']:focus{
 	outline: none;
 }
 
+#attendance-table tr#table-head-clone{
+	position: fixed;
+}
+
 .bordered-bottom{
 	border-bottom: 2px solid #555 !important;
 }
 
 .cell-bold{
 	font-weight:bold !important;
-	color:red;
+	background-color: #FF4D4D !important;
+	font-size: 18px !important;
 }
 .site-btn-delete,.trade-btn-delete,.labor-btn-delete,.holiday-btn-delete{
 	background-image: url('/images/glyph-delete.png');
@@ -216,11 +227,11 @@ a[class^='att_entry']:focus{
 	background-image: url('/images/glyph-download.png');
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
-	margin-bottom: 10px;
+	margin-top: 20px;
 	border-bottom: 5px solid grey;
 }
 #btn-make-xls:active{
-	margin-top: 4px;
+	margin-top: 24px;
 	border-bottom: 1px solid grey;
 }
 
@@ -262,13 +273,17 @@ input[name=ot],input[name=bot]{
 .labor-name{
 	display: inline-block;
 	width:40%;
-	height:30px;
-	outline: 1px solid #999;
-	padding:3px 0;
+	height:35px;
+	border: 1px solid #999;
+	padding:3px 3px;
 	overflow: hidden;
 	position: relative;
-	top:10px;
+	top:12px;
 	text-align:left;
+	line-height: 26px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 }
 
 .btn-att{
@@ -280,6 +295,9 @@ input[name=ot],input[name=bot]{
 #filled input[type=text],#unfilled input[type=text]{
 	display: inline-block;
 	height: 35px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 }
 
 #filled-options a,#unfilled-options a{
