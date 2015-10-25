@@ -18,7 +18,7 @@ class FillMissed extends Command
      *
      * @var string
      */
-    protected $signature = 'fillmissed';
+    protected $signature = 'FillMissed';
 
     /**
      * The console command description.
