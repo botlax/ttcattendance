@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\Inspire::class,
-        \App\Console\Commands\Populatemissed::class,
+        \App\Console\Commands\FillMissed::class,
     ];
 
     /**
@@ -25,6 +25,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('Populatemissed')->dailyAt('23:30');
+        $schedule->command('FillMissed')->dailyAt('23:30');
     }
 }
