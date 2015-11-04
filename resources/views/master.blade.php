@@ -31,7 +31,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                       </button>
-                      <a class="navbar-brand" href="{{url('/')}}"><img id="logo" src="{{url('images/logo.png')}}" alt="Talal Logo"/></a>
+                      <a class="navbar-brand" href="{{url('/')}}"><img id="logo" src="{{url('images/logo3.png')}}" alt="Talal Logo"/></a>
                     </div>
                     <div class="collapse navbar-collapse">
                         @if(\Auth::check() && \Auth::user()->isAdmin())
