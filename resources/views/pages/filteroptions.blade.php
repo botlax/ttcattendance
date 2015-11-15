@@ -17,8 +17,9 @@ Attendance
 @section('content')
 
 	<div class="text-left">
-		<a role="button" class="btn btn-default" id="btn-filter-att" href="#"></a>
-		<a role="button" class="btn btn-default" id="btn-make-xls" href="#"></a>
+		<a role="button" title="Filter Attendance" class="btn btn-default" id="btn-filter-att" href="#"></a>
+		<a role="button" title="Download as Spreadsheet" class="btn btn-default" id="btn-make-xls" href="#"></a>
+		<a role="button" title="View Summary" class="btn btn-default" id="btn-summary" href="#"></a>
 	</div>
 
 	<div id="attendance-table-wrap">
@@ -28,8 +29,8 @@ Attendance
 	</div>
 
 <div id="dialog-form-option" title="Filter">
-	{!! Form::open(['method'=>'GET','route' => 'filterAttendance','id'=>'filter-form']) !!}
-
+	{!! Form::open(['route' => 'filterAttendance','id'=>'filter-form']) !!}
+		{!! Form::hidden('makexls',null,['id'=>'makexls']) !!}
 	<div class="form-group">
 		{!! Form::label('employee_no','Employee ID: ') !!}
 		{!! Form::text('employee_no',null,['class'=>'form-control filter-form-text']) !!}
@@ -270,16 +271,10 @@ Attendance
 			}
 		});
 	
-		var fewSeconds = 20;
+		$('#btn-make-xls').hide();
+		$('#btn-summary').hide();
 		$('#btn-make-xls').click(function(){
-		    var btn = $(this);
-		    btn.before('<img id="exl-status" src="https://pt.ontests.me/static/img/loading.gif" width="200px"/>')
-		    btn.hide();
-		    setTimeout(function(){
-		    	$('#exl-status').hide();
-		    	$('#exl-status').remove();
-		        btn.fadeIn(300);
-		    }, fewSeconds*1000);
+			$('#filter-form').submit();
 		});
 
 
@@ -300,7 +295,10 @@ Attendance
 
 	    var skip,take,filterComplete,view_deleted,view_absent,date_from,date_to,employee_no,site_list,trade_list;
 		$('#filter-form').submit(function(e){
+
 			e.preventDefault();
+			$( "#dialog-form-option" ).dialog('close');
+			$('#attendance-table').html('<img id="loader-icon" src="/images/loading-icon.gif" alt="Loading.."/>');
 			skip = 0; take = 20; filterComplete = false;
 
 			if($('input[name=view-deleted').is(':checked')){
@@ -329,6 +327,8 @@ Attendance
 			    data: {'view_deleted':view_deleted,'view_absent':view_absent,'date_from':date_from,'date_to':date_to,'employee_no':employee_no,'site_list':site_list,'trade_list':trade_list,'skip':skip,'take':take},
 			    success: function(data){
 			    	$('#attendance-table').html('');
+			    	$('#btn-make-xls').show();
+			    	$('#btn-summary').show();
 			    	//$('body').append(data);
 
 			    	var dateFrom = new Date(data.dateFrom);
@@ -415,10 +415,8 @@ Attendance
 					    dataType:'json',
 					    type: "POST",
 					    data: {'view_deleted':view_deleted,'view_absent':view_absent,'date_from':date_from,'date_to':date_to,'employee_no':employee_no,'site_list':site_list,'trade_list':trade_list,'skip':skip,'take':take},
-					    beforeSend: function ( xhr ) {
-			               //Add your image loader here
-			            },
 					    success: function(data){
+					    	
 					    	if(data.filterComplete != 'true'){
 					    		//alert(data.filterComplete);
 					      		skip = skip+20;

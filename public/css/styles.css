@@ -5,14 +5,14 @@ body {
 	height:30px;
 }
 
-#labor-btn-show, #labor-deleted-btn-show{
+#labor-deleted-btn-show{
 	margin:10px 2%;
 	width:45%;
 }
 
-#labor-btn-add{
-	margin:10px 2%;
-	width:45%;
+#labor-btn-add,#labor-btn-loan,#labor-btn-show{
+	margin:10px 1%;
+	width:29%;
 }
 
 #labor-table thead tr th{
@@ -103,6 +103,7 @@ body {
 	overflow: scroll;
 	margin-top: 20px;
 	height: 470px;
+	text-align: center;
 }
 
 #attendance-table{
@@ -234,7 +235,7 @@ a[class^='att_entry']:focus{
 	width: 150px !important;
 	display: inline-block !important;
 }
-#btn-make-xls,#btn-filter-att{
+#btn-make-xls,#btn-filter-att,#btn-summary{
 	display: inline-block;
 	width: 80px;
 	height: 40px;
@@ -244,18 +245,32 @@ a[class^='att_entry']:focus{
 	margin-top: 20px;
 	border-bottom: 5px solid grey;
 }
-#btn-make-xls:active,#btn-filter-att:active{
+#btn-make-xls:active,#btn-filter-att:active,#btn-summary:active{
 	margin-top: 20px;
 	border-bottom: 1px solid grey;
 }
-#btn-make-xls:focus,#btn-filter-att:focus{
+#btn-make-xls:focus,#btn-filter-att:focus,#btn-summary:focus{
 	outline: none;
 	background-color: #fff;
 	border:1px solid #ccc;
 	border-bottom: 5px solid grey;
 }
+#loader-icon{
+	outline: 1px solid white;
+	border:1px solid white;
+}
+
+#loader-icon-small{
+	outline: 1px solid white;
+	border:1px solid white;
+	width: 150px;
+}
 #btn-filter-att{
 	background-image: url('/images/glyph-filter.png');
+	margin-right: 10px;
+}
+#btn-summary{
+	background-image: url('/images/glyph-summary.png');
 	margin-right: 10px;
 }
 .filled-up{

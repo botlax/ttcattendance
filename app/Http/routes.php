@@ -29,7 +29,7 @@ Route::post('/holiday/{id}/edit', ['uses'=>'HolidayController@update','as'=>'upd
 
 //attendance
 Route::get('/attendance',['uses' => 'AttendanceController@showFilterOptions']);
-Route::get('/attendance/filter',['uses' => 'AttendanceController@filterAttendance', 'as' => 'filterAttendance']);
+Route::post('/attendance/filterattendance',['uses' => 'AttendanceController@filterAttendance', 'as' => 'filterAttendance']);
 //Route::get('/attendance/create','AttendanceController@createSheet');
 Route::get('/attendance/list', ['uses' => 'AttendanceController@showSites']);
 //Route::post('/attendance/list', ['uses' => 'AttendanceController@searchID', 'as' => 'searchID']);
@@ -87,9 +87,15 @@ Route::post('/employees/deleted',['uses' => 'LaborController@searchDeleted']);
 Route::post('/employees/deleted/{id}',['uses' => 'LaborController@undeleteLabor','as'=>'undeleteLabor']);
 Route::get('/employees/add',['uses' => 'LaborController@add']);
 Route::post('/employees/add',['uses' => 'LaborController@store', 'as' => 'storeLabor']);
+Route::get('/employees/with-loan',['uses' => 'LaborController@withLoan']);
+Route::get('/employees/{id}/loan',['uses' => 'LaborController@indexLoan']);
+Route::post('/employees/{id}/loan',['uses' => 'LaborController@updateLoan', 'as' => 'updateLoan']);
+Route::get('/employees/{id}/loan/add',['uses' => 'LaborController@addLoan']);
+Route::post('/employees/{id}/loan/add',['uses' => 'LaborController@storeLoan', 'as' => 'storeLoan']);
 Route::get('/employees/{id}/edit',['uses' => 'LaborController@edit']);
 Route::get('/employees/{id}/delete',['uses' => 'LaborController@destroy']);
 Route::post('/employees/{id}',['uses' => 'LaborController@update', 'as' => 'updateLabor']);
+Route::get('/employees/{id}/loan/{loanId}/delete',['uses'=>'LaborController@deleteLoan']);
 
 // Authentication routes...
 Route::get('user/login', ['uses'=>'Auth\AuthController@getLogin']);

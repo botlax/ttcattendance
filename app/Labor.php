@@ -23,6 +23,14 @@ class Labor extends Model
 		return $this->belongsToMany('App\Attendance','labor_attendance')->withPivot('attended','ot','bot','locked','site');
 	}
 
+	public function loan(){
+		return $this->hasMany('App\Loan');
+	}
+
+	public function loanMonths(){
+		return $this->hasManyThrough('App\LoanMonths','App\Loan');
+	}
+
 	public function getNameAttribute($name){
 		return ucwords($name);
 	}

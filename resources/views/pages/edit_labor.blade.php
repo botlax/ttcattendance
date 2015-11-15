@@ -11,7 +11,10 @@ Users
 	<div class="row">
 		<div class="col-md-8 col-md-offset-2">
 			<div class="panel panel-default">
-				<div class="panel-heading">Edit {{ $labor->name }}</div>
+				<div class="panel-heading">Edit {{ $labor->name }}
+					<a role="button" class="btn btn-default pull-right" href="{{url('employees/'.$labor->employee_no.'/loan/add')}}">Add Loan</a>
+					<a role="button" class="btn btn-default pull-right" href="{{url('employees/'.$labor->employee_no.'/loan')}}">View Loan</a>
+				</div>
 				<div class="panel-body">
 				@include('partials._error')
 					{!! Form::model($labor,['route' => ['updateLabor',$labor->id],'class'=>'form-horizontal','files'=>TRUE]) !!}

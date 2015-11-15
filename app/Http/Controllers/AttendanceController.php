@@ -9,6 +9,8 @@ use App\Http\Requests\AttRequest;
 use App\Http\Controllers\Controller;
 use App\User;
 use App\Holiday;
+use App\Loan;
+use App\LoanMonths;
 use App\Trade;
 use App\Site;
 use App\Labor;
@@ -21,7 +23,7 @@ class AttendanceController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role',['except' => ['filterAjaxAttendance','lock','viewAjaxAllFilled','viewAjaxAllUnfilled','addAjaxAtt','editAjaxAtt','deleteAjaxAtt','searchAjaxUnfilledLabor','searchAjaxFilledLabor','showSites','showSearch','addAttendance','storeAttendance','updateAttendance','editAttendance','lockAttendance']]);
+        $this->middleware('role',['except' => ['filterAttendance','filterAjaxAttendance','lock','viewAjaxAllFilled','viewAjaxAllUnfilled','addAjaxAtt','editAjaxAtt','deleteAjaxAtt','searchAjaxUnfilledLabor','searchAjaxFilledLabor','showSites','showSearch','addAttendance','storeAttendance','updateAttendance','editAttendance','lockAttendance']]);
         $this->middleware('notAdmin',['only' => ['lock','viewAjaxAllFilled','viewAjaxAllUnfilled','addAjaxAtt','editAjaxAtt','deleteAjaxAtt','searchAjaxUnfilledLabor','searchAjaxFilledLabor','showSites','showSearch','addAttendance','storeAttendance','updateAttendance','editAttendance','lockAttendance']]);
     }
 
@@ -31,19 +33,7 @@ class AttendanceController extends Controller
      * @return Response
      */
     public function showFilterOptions()
-    {/*
-        $att_id = 2;
-        foreach(Labor::all() as $labor){
-            Attendance::where('id',$att_id)->first()->labor()->attach($labor->id);
-            $att = Attendance::where('id',$att_id)->first()->labor()->where('id',$labor->id)->first()->pivot;
-            $att->attended = 1;
-            $att->ot = 0;
-            $att->bot = 0;
-            $att->site = $labor->site->code;
-            $att->locked = 'true';
-            $att->save();
-        }
-        */
+    {
         $sites = Site::where('id','>',1)->get()->lists('code','id')->toArray();
         $trades = Trade::all()->lists('name','id')->toArray();
         array_unshift($trades, "");
@@ -58,45 +48,52 @@ class AttendanceController extends Controller
      */
     public function filterAttendance(Request $request)
     {   
-        //dd(Site::all()->lists('code','code')->toArray());
-        $this->validate($request,[
-            'employee_no' => 'numeric'
-        ]);
-
-        $viewDeleted = $request->get('view-deleted');
+        $viewDeleted = $request->input('view-deleted');
+        $dateFrom = $request->input('date-from');
+        $dateTo = $request->input('date-to');
+        $employee_no = $request->input('employee_no');
+        $site = $request->input('site_list');
+        $trade = $request->input('trade_list');
+        $dateFromCarbon = Carbon::parse($dateFrom);
+        $dateToCarbon = Carbon::parse($dateTo);
         $sites = Site::where('id','>',1)->get()->lists('code','id')->toArray();
-        $months = ['1'=>'January','2'=>'February','3'=>'March','4'=>'April','5'=>'May','6'=>'June','7'=>'July','8'=>'August','9'=>'September','10'=>'October','11'=>'November','12'=>'December'];
-        $years = [];
-        for($y=2015;$y<=intval(date('Y'));$y++){
-            $years[$y] = $y; 
+
+        $monthFrom = $dateFromCarbon->format('n');
+        $monthTo = $dateToCarbon->format('n');
+        $yearFrom = $dateFromCarbon->format('Y');
+        $yearTo = $dateToCarbon->format('Y');
+
+        $total_days = 0;
+        if($monthFrom != $monthTo && $yearFrom == $yearTo){
+            $counter = 0;
+            for($monthInt = intval($monthFrom);$monthInt <= intval($monthTo);$monthInt++){
+                $counter += 1;
+                $total_days += intval($this->daysCount(''.$monthInt,$yearFrom));
+            }
+            $total_days /= $counter;
         }
-        $yearI = $request->get('year');
-        $monthI = $request->get('month');
+        elseif($monthFrom == $monthTo && $yearFrom == $yearTo){
+            $total_days += intval($this->daysCount($monthFrom,$yearFrom));
+        }
 
-        $dEnd = $this->daysCount($monthI,$yearI);
-        
-
-        $dateFrom = Carbon::parse('1-'.$monthI.'-'.$yearI);
-        $dateTo = Carbon::parse($dEnd.'-'.$monthI.'-'.$yearI)->addDay();
-        //dd(Labor::where('employee_no',1201)->first()->attendance()->where('att_date','>',$dateFrom)->where('att_date','<',$dateTo)->first());
-
-        $month = $dateFrom->format('M');
-        $year = $dateFrom->format('Y');
-        $employee_no = $request->get('employee_no');
-        $site = $request->get('site_list');
-        $showAbsent = is_null($request->get('view-absent'))?false:true;
+        $showAbsent = $request->input('view-absent') == 1?true:false;
         $labors = Labor::where('deleted','false')->orderBy('employee_no')->get();
+
+        //if deleted employees included
         if($viewDeleted){
             $labors = Labor::orderBy('employee_no')->get();
         }
 
-        if(!empty($employee_no) && empty($site)){
+        //if filter by employee number
+        if(!empty($employee_no) && empty($site) && empty($trade)){
             $labors = Labor::where('employee_no',$employee_no)->where('deleted','false')->orderBy('employee_no')->get();
             if($viewDeleted){
                 $labors = Labor::where('employee_no',$employee_no)->orderBy('employee_no')->get();
             }
         }
-        elseif(empty($employee_no) && !empty($site)){
+
+        //if filter by site
+        elseif(empty($employee_no) && !empty($site) && empty($trade)){
             $labors = Labor::where('deleted','false')->where('site_id',$site[0]);
 
             if($viewDeleted){
@@ -110,63 +107,157 @@ class AttendanceController extends Controller
             }
             $labors = $labors->orderBy('employee_no')->get();
         }
-        elseif(!empty($employee_no) && !empty($site)){
+
+        //if filter by trade
+        elseif(empty($employee_no) && empty($site) && !empty($trade)){
+            $labors = Labor::where('deleted','false')->where('trade_id',$trade[0]);
+
+            if($viewDeleted){
+                $labors = Labor::where('trade_id',$trade[0]);
+            }
+
+            if(count($trade) > 1){
+                foreach($trade as $t){
+                        $labors = $labors->orWhere('trade_id',$t);
+                }
+            }
+            $labors = $labors->orderBy('employee_no')->get();
+        }
+
+        //if filter by site and employee_no
+        elseif(!empty($employee_no) && !empty($site) && empty($trade)){
             $labors = Labor::where('deleted','false')->where('employee_no',$employee_no);
             if($viewDeleted){
                 $labors = Labor::where('employee_no',$employee_no);
             }
-            foreach($site as $s){
-                $labors = $labors->orWhere('site_id',$s);
-            }
+
+            $labors = $labors->where(function($query)use($site){
+                foreach($site as $s){
+                    $query->orWhere('site_id',$s);
+                }
+            });
+            
             
             $labors = $labors->orderBy('employee_no')->get();
         }
+
+        //if filter by trade and employee_no
+        elseif(!empty($employee_no) && empty($site) && !empty($trade)){
+            $labors = Labor::where('deleted','false')->where('employee_no',$employee_no);
+            if($viewDeleted){
+                $labors = Labor::where('employee_no',$employee_no);
+            }
+            $labors = $labors->where(function($query)use($trade){
+                foreach($trade as $t){
+                    $query->orWhere('trade_id',$t);
+                }
+            });
+            
+            $labors = $labors->orderBy('employee_no')->get();
+        }
+
+        //if filter by trade and site
+        elseif(empty($employee_no) && !empty($site) && !empty($trade)){
+            $labors = Labor::where('deleted','false');
+            if($viewDeleted){
+                $labors = Labor::all();
+            }
+            $labors = $labors->where(function($query)use($site){
+                foreach($site as $s){
+                    $query->orWhere('site_id',$s);
+                }
+            });
+            $labors = $labors->where(function($query)use($trade){
+                foreach($trade as $t){
+                    $query->orWhere('trade_id',$t);
+                }
+            });
+            
+            $labors = $labors->orderBy('employee_no')->get();
+        }
+
+        //if filter by trade, site and employee_no
+        elseif(!empty($employee_no) && !empty($site) && !empty($trade)){
+            $labors = Labor::where('deleted','false')->where('employee_no',$employee_no);
+            if($viewDeleted){
+                $labors = Labor::where('employee_no',$employee_no);
+            }
+            $labors = $labors->where(function($query)use($site){
+                foreach($site as $s){
+                    $query->orWhere('site_id',$s);
+                }
+            });
+            $labors = $labors->where(function($query)use($trade){
+                foreach($trade as $t){
+                    $query->orWhere('trade_id',$t);
+                }
+            });
+            
+            $labors = $labors->orderBy('employee_no')->get();
+        }
+
+        $filterComplete = empty($labors->toArray())?'true':'false';
         $labor_att = [];
         $total = [];
-        
+        $salary = [];
+        $trades = [];
         foreach($labors as $labor){
 
             $att_count = 0;
             $ot_count = 0.00;
             $bot_count = 0.00;
+            $trades[] = $labor->trade->name;
+            for($dateFromCarbon;$dateFromCarbon<=$dateToCarbon;$dateFromCarbon->addDay()){
 
-            for($dateFrom;$dateFrom<$dateTo;$dateFrom->addDay()){
-
-                $att_entry = $labor->attendance->where('string_date',$dateFrom->format('Ymd'))->first();
+                $att_entry = $labor->attendance()->where('att_date',$dateFromCarbon->format('Y-m-d H:i:s'))->first();
 
                 if(!is_null($att_entry) ){
                     if($showAbsent && $att_entry->pivot->attended == '1'){
-                        $labor_att[$labor->employee_no]['attended'][$dateFrom->format('Y-m-d')] = '—';
+                        $labor_att[$labor->employee_no]['attended'][$dateFromCarbon->format('Y-m-d')] = '—';
                     }
                     else{
-                        $labor_att[$labor->employee_no]['attended'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->attended;
-                        $att_count += intval($labor_att[$labor->employee_no]['attended'][$dateFrom->format('Y-m-d')]);
+                        $labor_att[$labor->employee_no]['attended'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->attended;
+                        $att_count += intval($labor_att[$labor->employee_no]['attended'][$dateFromCarbon->format('Y-m-d')]);
                     }
                 }
                 else{
-                    $labor_att[$labor->employee_no]['attended'][$dateFrom->format('Y-m-d')] = '—';
-                }   
+                    $labor_att[$labor->employee_no]['attended'][$dateFromCarbon->format('Y-m-d')] = '—';
+                }
 
                 if(!is_null($att_entry) && $att_entry->pivot->attended == '1'){
                     if($showAbsent){
-                        $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = '—';
-                        $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = '—';
-                        $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = '—';
+                        $labor_att[$labor->employee_no]['ot'][$dateFromCarbon->format('Y-m-d')] = '—';
+                        $labor_att[$labor->employee_no]['bot'][$dateFromCarbon->format('Y-m-d')] = '—';
+                        $labor_att[$labor->employee_no]['site'][$dateFromCarbon->format('Y-m-d')] = '—';
                     }
                     else{
-                        $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->ot;
-                        $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = round($att_entry->pivot->bot,2);
-                        $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = $att_entry->pivot->site;
+                        $labor_att[$labor->employee_no]['ot'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->ot;
+                        $labor_att[$labor->employee_no]['bot'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->bot;
+                        $labor_att[$labor->employee_no]['site'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->site;
 
                         $ot_count += floatval($att_entry->pivot->ot);
                         $bot_count += intval($att_entry->pivot->bot);
                     }
                 }
-                elseif(is_null($att_entry) || $att_entry->pivot->attended == '0'){
-                    $labor_att[$labor->employee_no]['attended'][$dateFrom->format('Y-m-d')] = '—';
-                    $labor_att[$labor->employee_no]['ot'][$dateFrom->format('Y-m-d')] = '—';
-                    $labor_att[$labor->employee_no]['bot'][$dateFrom->format('Y-m-d')] = '—';
-                    $labor_att[$labor->employee_no]['site'][$dateFrom->format('Y-m-d')] = '—';
+                elseif(!is_null($att_entry) && $att_entry->pivot->attended == '0'){
+                    if($showAbsent){
+                        $labor_att[$labor->employee_no]['attended'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->attended;
+                        $labor_att[$labor->employee_no]['ot'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->ot;
+                        $labor_att[$labor->employee_no]['bot'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->bot;
+                        $labor_att[$labor->employee_no]['site'][$dateFromCarbon->format('Y-m-d')] = $att_entry->pivot->site;
+                    }
+                    else{
+                        $labor_att[$labor->employee_no]['attended'][$dateFromCarbon->format('Y-m-d')] = '—';
+                        $labor_att[$labor->employee_no]['ot'][$dateFromCarbon->format('Y-m-d')] = '—';
+                        $labor_att[$labor->employee_no]['bot'][$dateFromCarbon->format('Y-m-d')] = '—';
+                        $labor_att[$labor->employee_no]['site'][$dateFromCarbon->format('Y-m-d')] = '—';
+                    }
+                }
+                elseif(is_null($att_entry)){
+                    $labor_att[$labor->employee_no]['attended'][$dateFromCarbon->format('Y-m-d')] = '—';
+                    $labor_att[$labor->employee_no]['ot'][$dateFromCarbon->format('Y-m-d')] = '—';
+                    $labor_att[$labor->employee_no]['bot'][$dateFromCarbon->format('Y-m-d')] = '—';
+                    $labor_att[$labor->employee_no]['site'][$dateFromCarbon->format('Y-m-d')] = '—';
                 }
                
                 $total[$labor->employee_no]['attended'] = round($att_count,2);
@@ -177,7 +268,6 @@ class AttendanceController extends Controller
                 $basic_salary = intval($labor->basic_salary);
                 $allowance = intval($labor->allowance);
                 $gross = intval($labor->basic_salary) + intval($labor->allowance);
-                $total_days = intval($dEnd);
                 
                 $salary[$labor->employee_no]['attended'] = round(($gross / $total_days) * $att_count,2);
                 $salary[$labor->employee_no]['ot'] = round(((($basic_salary / $total_days) / 8)*1.25) * $ot_count,2);
@@ -185,21 +275,21 @@ class AttendanceController extends Controller
                 
                 $salary[$labor->employee_no]['total'] = $salary[$labor->employee_no]['attended'] + $salary[$labor->employee_no]['ot'] + $salary[$labor->employee_no]['bot'];
             }
-            $dateFrom = Carbon::parse('1-'.$month.'-'.$year);
+            $dateFromCarbon = Carbon::parse($dateFrom);
         }
 
-        if($request->input('makesheet')){
-            \Excel::create('Attendance', function($excel) use($month,$year,$labors,$labor_att,$total,$salary){
+        if($request->input('makexls') == '1'){
+            \Excel::create('Attendance', function($excel) use($dateFromCarbon,$dateToCarbon,$labors,$labor_att,$total,$salary){
                 $excel->setTitle('Attendance');
                 $excel->setCreator('www.ttc-attendance.tk')
                       ->setCompany('Talal Trading & Contracting Co.');
 
-                $excel->sheet('Sheetname', function($sheet) use($month,$year,$labors,$labor_att,$total,$salary){
+                $excel->sheet('Sheetname', function($sheet) use($dateFromCarbon,$dateToCarbon,$labors,$labor_att,$total,$salary){
 
                     //data
                     $heading = ['ID','Name','Trade','Date'];
-                    for($x=1;$x <= $this->daysCount($month,$year);$x++){
-                        $heading[] = $x;
+                    for($dateFromCarbon;$dateFromCarbon <= $dateToCarbon;$dateFromCarbon->addDay()){
+                        $heading[] = $dateFromCarbon->format('d');
                     }
                     $heading[] = 'Total';
                     $heading[] = 'Salary';
@@ -323,8 +413,7 @@ class AttendanceController extends Controller
                 });
             })->download('xlsx');
         }
-        //dd($total);
-        $request->flash();
+       
         return view('pages.filteroptions',compact('salary','total','labors','sites','months','years','dateTo','dateFrom','month','year','labor_att'));
     }
 
@@ -404,15 +493,9 @@ class AttendanceController extends Controller
 
 //---------------------------------------ajax methods
 
-    /**
-     * Display attendance based on filter
-     *
-     * @return Response
-     */
     public function filterAjaxAttendance()
-
     {   
-        
+
         $filterComplete = 'false';
         $skip = intval(\Input::get('skip'));
         $take = intval(\Input::get('take'));
@@ -574,6 +657,15 @@ class AttendanceController extends Controller
             $att_count = 0;
             $ot_count = 0.00;
             $bot_count = 0.00;
+            $deduction = 0;
+            //$loanEntry = $labor->loanMonths()->where('deduction_month',Carbon::now()->format('Ym'))->first();
+            
+            foreach($labor->loanMonths()->get() as $loanMonth){
+                if($loanMonth->deduction_date->format('Ym') == Carbon::now()->format('Ym')){
+                    $deduction = intval(Loan::find($loanMonth->loan_id)->deduction);
+                }    
+            }
+            
             $trades[] = $labor->trade->name;
             for($dateFromCarbon;$dateFromCarbon<=$dateToCarbon;$dateFromCarbon->addDay()){
 
@@ -641,7 +733,7 @@ class AttendanceController extends Controller
                 $salary[$labor->employee_no]['ot'] = round(((($basic_salary / $total_days) / 8)*1.25) * $ot_count,2);
                 $salary[$labor->employee_no]['bot'] = round(((($basic_salary / $total_days) / 8)*1.25) * $bot_count,2);
                 
-                $salary[$labor->employee_no]['total'] = $salary[$labor->employee_no]['attended'] + $salary[$labor->employee_no]['ot'] + $salary[$labor->employee_no]['bot'];
+                $salary[$labor->employee_no]['total'] = ($salary[$labor->employee_no]['attended'] + $salary[$labor->employee_no]['ot'] + $salary[$labor->employee_no]['bot'])-$deduction;
             }
             $dateFromCarbon = Carbon::parse($dateFrom);
         }
@@ -649,9 +741,7 @@ class AttendanceController extends Controller
         $response = ['trade'=>$trades,'salary'=>$salary,'total'=>$total,'labor_att'=>$labor_att,'labor'=>$labors,'dateFrom'=>$dateFromCarbon->format('Y-m-d'),'dateTo'=>$dateToCarbon->format('Y-m-d'),'filterComplete'=>$filterComplete];
         echo json_encode($response);
     }
-
-
-
+  
     public function getSelectOptions()
     {
         $field = \Input::get('field');
@@ -911,6 +1001,7 @@ class AttendanceController extends Controller
                 $att->pivot->save();
             }
         }
+
         if($num == 1){
             flash()->error('Attendance is empty.');
             return redirect('attendance/list/'.$site);
@@ -956,7 +1047,7 @@ class AttendanceController extends Controller
      * @return Response
      */
     public function showSearch($site)
-    {   
+    {
         
         if(!$this->siteIsLocked($site)){
             $labors = Site::where('code',$site)->first()->labor()->get();
@@ -969,38 +1060,7 @@ class AttendanceController extends Controller
         }
     }
 
-    
-    /*
-    public function showSearch(Request $request)
-    {   
-        
-        $siteID = $request->input('site');
-        $this->validate($request,[
-            'id'.$siteID => 'required|numeric'
-        ]);
-        
-        $employeeID = $request->input('id'.$siteID);
-        $labor = Labor::where('site_id',$siteID)->where('employee_no',$employeeID)->first();
-                
-        if($labor != null){
-            if($labor->attendance->where('id',$this->getDateId())->first() == null){
-                $holiday = $this->todayIsHoliday();
-                return view('pages.add_attendance',compact('labor','holiday'));
-            }
-            else{
-                flash("Employee ID ".$employeeID." attendance has been already filled up.");
-                return redirect('attendance/list');
-            }
-        }
-        else{
-            flash('Sorry, the Employee ID you entered does not belong to this site.');
-            return redirect('attendance/list');
-        }
-
-        
-    }
-*/
-
+   
 
     /**
      * Add Attendance to labor
@@ -1136,12 +1196,12 @@ class AttendanceController extends Controller
 
     
 
-    /*
-    *
-    *
-    *Functions
-    *
-    */
+    /**
+     *
+     *
+     *Functions
+     *
+     */
     public function initialized(){
 
         $dbToday = null;

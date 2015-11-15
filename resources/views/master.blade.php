@@ -31,7 +31,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                       </button>
-                      <a class="navbar-brand" href="{{url('/')}}"><img id="logo" src="{{url('images/logo3.png')}}" alt="Talal Logo"/></a>
+                      <a class="navbar-brand" href="{{url('/')}}"><img id="logo" src="{{url('images/logo.png')}}" alt="Talal Logo"/></a>
                     </div>
                     <div class="collapse navbar-collapse">
                         @if(\Auth::check() && \Auth::user()->isAdmin())
@@ -103,7 +103,7 @@
             </footer>
 
         <script>
-            $('div.alert').not('.alert-important').delay(3000).slideUp(300);
+            $('div.alert').not('.alert-important').delay(5000).slideUp(300);
         </script>
         </div>
     </body>

@@ -7,14 +7,18 @@ use Input;
 use Image;
 use App\Http\Requests;
 use App\Http\Requests\LaborRequest;
+use App\Http\Requests\AddLoanRequest;
 use App\Http\Requests\LaborSearchRequest;
 use App\Http\Requests\LaborEditRequest;
 use App\Http\Controllers\Controller;
 use App\User;
+use App\Loan;
+use App\LoanMonths;
 use App\Trade;
 use App\Site;
 use App\Labor;
 use App\Attendance;
+use Carbon\Carbon;
 
 class LaborController extends Controller
 {   
@@ -199,5 +203,147 @@ class LaborController extends Controller
         $labor->deleted = 'true';
         $labor->save();
         return redirect('employees');
+    }
+
+    /**
+     * View employees with loan
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function withLoan()
+    {
+        $labors = Labor::where('deleted','false');
+        
+        $labors = $labors->where(function($query){
+            foreach(Loan::all() as $loan){
+                $labor = $loan->labor()->first();
+                if($labor != null){
+                    $query->orWhere('employee_no',$labor->employee_no);
+                }
+            }
+        });
+
+        $labors = $labors->paginate(20);
+        //dd($labor);
+        return view('pages.index_labor',compact('labors'));
+    }
+
+    /**
+     * View employees with loan
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function indexLoan($id)
+    {   
+        $labor_id = Labor::where('employee_no',$id)->first()->id;
+        $loans = Loan::where('labor_id',$labor_id)->get();
+        $loanDetails = [];
+        foreach($loans as $loan){
+            $monthCounter = 0;
+            $totalMonth = count(Labor::find($labor_id)->LoanMonths()->where('loan_id',$loan->id)->get()->toArray());
+            $thisMonth = intval(Carbon::today()->format('ym'));
+            foreach(Labor::find($labor_id)->LoanMonths()->where('loan_id',$loan->id)->get() as $loanMonth){
+                if(intval($loanMonth->deduction_date->format('ym')) < $thisMonth){
+                    $monthCounter++;
+                }
+            }
+            $loanDetails[$loan->id]['months_left'] = $totalMonth - $monthCounter;
+            $loanDetails[$loan->id]['amount_left'] = floatval($loan->deduction * ($totalMonth - $monthCounter));
+            $loanDetails[$loan->id]['deducted'] = $loan->deduction * $monthCounter;
+            $loanDetails[$loan->id]['next_month'] = Carbon::today()->format('F, Y');
+        }
+        //dd($loans);
+        //dd($loans->first()->starting_date);
+        return view('pages.index_loan',compact('loans','id','loanDetails'));
+    }
+
+    /**
+     * View employees with loan
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function updateLoan(AddLoanRequest $request,$id)
+    {   
+
+        $loan_id = $request->input('id');
+        $loan = Loan::find($loan_id)->update($request->except('id'));
+        $labor_id = Labor::where('employee_no',$id)->first()->id;
+
+        $interval = intval($request->input('interval'));
+        $noOfMonths = intval($request->input('months-to-pay'));
+        $start_date = Carbon::parse($request->input('starting_date'));
+        $loanId = $loan_id;
+
+        Labor::where('employee_no',$id)->first()->LoanMonths()->where('loan_id',$loanId)->delete();
+
+        for($noOfMonths, $start_date ; $noOfMonths > 0 ; $noOfMonths--, $start_date->addMonth($interval)){
+            $loan = new LoanMonths;
+            $loan->deduction_date = $start_date;
+            $loan->loan_id = $loanId;
+            $loan->save();
+        }
+
+        $loans = Loan::where('labor_id',$labor_id)->get();
+        flash()->success('Loan successfully updated.');
+        return view('pages.index_loan',compact('loans','id'));
+    }
+
+    /**
+     * View employees with loan
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function deleteLoan($id,$loanId)
+    {   
+        Labor::where('employee_no',$id)->first()->LoanMonths()->where('loan_id',$loanId)->delete();
+        Loan::find($loanId)->delete();
+        flash()->success('Successfully deleted.');
+        return redirect('employees/'.$id.'/edit');
+    }
+
+    /**
+     * View employees with loan
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function addLoan($id)
+    {   
+        return view('pages.add_loan',compact('id'));
+    }
+
+    /**
+     * View employees with loan
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function storeLoan(AddLoanRequest $request,$id)
+    {   
+        $interval = intval($request->input('interval'));
+        $noOfMonths = intval($request->input('months-to-pay'));
+        $labor = Labor::where('employee_no',$id)->first();
+        $loanEntry = $labor->loan()->save(new Loan($request->all()));
+        $loanEntry->deduction = intval($request->input('amount'))/$noOfMonths;
+        $loanEntry->save();
+
+        $loanId = $loanEntry->id;
+        $start_date = Carbon::parse($request->input('starting_date'));
+
+        //dd($noOfMonths);
+        for($noOfMonths, $start_date ; $noOfMonths > 0 ; $noOfMonths--, $start_date->addMonth($interval)){
+            $loan = new LoanMonths;
+            $loan->deduction_date = $start_date;
+            $loan->loan_id = $loanId;
+            $loan->save();
+        }
+
+        flash()->success('Loan successfully added.');
+        return redirect('employees/'.$id.'/edit');    
+        
     }
 }
