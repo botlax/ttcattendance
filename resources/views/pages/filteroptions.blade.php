@@ -30,7 +30,6 @@ Attendance
 
 <div id="dialog-form-option" title="Filter">
 	{!! Form::open(['route' => 'filterAttendance','id'=>'filter-form']) !!}
-		{!! Form::hidden('makexls',null,['id'=>'makexls']) !!}
 	<div class="form-group">
 		{!! Form::label('employee_no','Employee ID: ') !!}
 		{!! Form::text('employee_no',null,['class'=>'form-control filter-form-text']) !!}
@@ -273,7 +272,16 @@ Attendance
 	
 		$('#btn-make-xls').hide();
 		$('#btn-summary').hide();
-		$('#btn-make-xls').click(function(){
+		$('#btn-summary').click(function(e){
+			e.preventDefault();
+			$('#filter-form #xls-trigger').remove();
+			$('#filter-form').prepend('<input type="hidden" name="summary" id="summary-trigger" value="1">');
+			$('#filter-form button').click();
+		});
+		$('#btn-make-xls').click(function(e){
+			e.preventDefault();
+			$('#filter-form #summary-trigger').remove();
+			$('#filter-form').prepend('<input type="hidden" name="makexls" id="xls-trigger" value="1">');
 			$('#filter-form').submit();
 		});
 
@@ -293,10 +301,16 @@ Attendance
 	        }
 	    });
 
-	    var skip,take,filterComplete,view_deleted,view_absent,date_from,date_to,employee_no,site_list,trade_list;
-		$('#filter-form').submit(function(e){
+	    var summary = null,skip,take,filterComplete,view_deleted,view_absent,date_from,date_to,employee_no,site_list,trade_list;
+		$('#filter-form button').click(function(e){
 
 			e.preventDefault();
+			if($('#summary-trigger').length){
+				summary = 1;
+			}
+			else{
+				summary = null;
+			}
 			$( "#dialog-form-option" ).dialog('close');
 			$('#attendance-table').html('<img id="loader-icon" src="/images/loading-icon.gif" alt="Loading.."/>');
 			skip = 0; take = 20; filterComplete = false;
@@ -319,13 +333,13 @@ Attendance
 			site_list = $('#filter-sites').val();
 			trade_list = $('#filter-trades').val();
 			//alert(view_absent);
-
 			$.ajax({
 				url: 'attendance/filter',
 			    dataType:'json',
 			    type: "POST",
-			    data: {'view_deleted':view_deleted,'view_absent':view_absent,'date_from':date_from,'date_to':date_to,'employee_no':employee_no,'site_list':site_list,'trade_list':trade_list,'skip':skip,'take':take},
+			    data: {'summary':summary,'view_deleted':view_deleted,'view_absent':view_absent,'date_from':date_from,'date_to':date_to,'employee_no':employee_no,'site_list':site_list,'trade_list':trade_list,'skip':skip,'take':take},
 			    success: function(data){
+			    	$('#summary-trigger').remove();
 			    	$('#attendance-table').html('');
 			    	$('#btn-make-xls').show();
 			    	$('#btn-summary').show();

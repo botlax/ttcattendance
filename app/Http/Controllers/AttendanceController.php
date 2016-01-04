@@ -63,19 +63,9 @@ class AttendanceController extends Controller
         $yearFrom = $dateFromCarbon->format('Y');
         $yearTo = $dateToCarbon->format('Y');
 
-        $total_days = 0;
-        if($monthFrom != $monthTo && $yearFrom == $yearTo){
-            $counter = 0;
-            for($monthInt = intval($monthFrom);$monthInt <= intval($monthTo);$monthInt++){
-                $counter += 1;
-                $total_days += intval($this->daysCount(''.$monthInt,$yearFrom));
-            }
-            $total_days /= $counter;
-        }
-        elseif($monthFrom == $monthTo && $yearFrom == $yearTo){
-            $total_days += intval($this->daysCount($monthFrom,$yearFrom));
-        }
-
+        $total_days = $dateFromCarbon->diffInDays($dateToCarbon);
+        $total_days = $total_days == 0?1:$total_days;
+       
         $showAbsent = $request->input('view-absent') == 1?true:false;
         $labors = Labor::where('deleted','false')->orderBy('employee_no')->get();
 
@@ -206,6 +196,7 @@ class AttendanceController extends Controller
             $att_count = 0;
             $ot_count = 0.00;
             $bot_count = 0.00;
+            $summary = [];
             $trades[] = $labor->trade->name;
             for($dateFromCarbon;$dateFromCarbon<=$dateToCarbon;$dateFromCarbon->addDay()){
 
@@ -277,8 +268,25 @@ class AttendanceController extends Controller
             }
             $dateFromCarbon = Carbon::parse($dateFrom);
         }
+        /*
+        if(true){
+       
+           $summary['total_days'] = $total_days;
+           
+           if(empty($site)){
+               $siteses = Site::all()->lists('id')->toArray();
+               foreach($siteses as $siters){
+                    $summary[$siters] = $labors->where('site_id',$siters);
+               }
+           }
+           else{
 
-        if($request->input('makexls') == '1'){
+           }
+           dd($summary);
+
+        }
+        */
+        if($request->input('makexls') == "1"){
             \Excel::create('Attendance', function($excel) use($dateFromCarbon,$dateToCarbon,$labors,$labor_att,$total,$salary){
                 $excel->setTitle('Attendance');
                 $excel->setCreator('www.ttc-attendance.tk')
@@ -495,7 +503,7 @@ class AttendanceController extends Controller
 
     public function filterAjaxAttendance()
     {   
-
+        $summary = [];
         $filterComplete = 'false';
         $skip = intval(\Input::get('skip'));
         $take = intval(\Input::get('take'));
@@ -514,18 +522,8 @@ class AttendanceController extends Controller
         $yearFrom = $dateFromCarbon->format('Y');
         $yearTo = $dateToCarbon->format('Y');
 
-        $total_days = 0;
-        if($monthFrom != $monthTo && $yearFrom == $yearTo){
-            $counter = 0;
-            for($monthInt = intval($monthFrom);$monthInt <= intval($monthTo);$monthInt++){
-                $counter += 1;
-                $total_days += intval($this->daysCount(''.$monthInt,$yearFrom));
-            }
-            $total_days /= $counter;
-        }
-        elseif($monthFrom == $monthTo && $yearFrom == $yearTo){
-            $total_days += intval($this->daysCount($monthFrom,$yearFrom));
-        }
+        $total_days = $dateFromCarbon->diffInDays($dateToCarbon);
+         $total_days = $total_days == 0?1:$total_days;
 
         $showAbsent = \Input::get('view_absent') == 1?true:false;
         $labors = Labor::where('deleted','false')->orderBy('employee_no')->skip($skip)->take($take)->get();
@@ -737,8 +735,25 @@ class AttendanceController extends Controller
             }
             $dateFromCarbon = Carbon::parse($dateFrom);
         }
+        /*
+         $summary = [];
+        if(\Input::get('summary')){
+           $summary['total_days'] = $total_days;
+           
+           if(!empty($site)){
+               $sites = Site::all()->lists('name')->toArray();
+               foreach($sites as $site){
+                    $labors->where
+               }
+           }
+           else{
 
-        $response = ['trade'=>$trades,'salary'=>$salary,'total'=>$total,'labor_att'=>$labor_att,'labor'=>$labors,'dateFrom'=>$dateFromCarbon->format('Y-m-d'),'dateTo'=>$dateToCarbon->format('Y-m-d'),'filterComplete'=>$filterComplete];
+           }
+           
+
+        }
+        */
+        $response = ['summary'=>$summary,'trade'=>$trades,'salary'=>$salary,'total'=>$total,'labor_att'=>$labor_att,'labor'=>$labors,'dateFrom'=>$dateFromCarbon->format('Y-m-d'),'dateTo'=>$dateToCarbon->format('Y-m-d'),'filterComplete'=>$filterComplete];
         echo json_encode($response);
     }
   
