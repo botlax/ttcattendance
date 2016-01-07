@@ -62,7 +62,10 @@ class AttendanceController extends Controller
         $monthTo = $dateToCarbon->format('n');
         $yearFrom = $dateFromCarbon->format('Y');
         $yearTo = $dateToCarbon->format('Y');
-
+        
+        
+        $dFrom = Carbon::parse($dateFrom);
+        $dTo = Carbon::parse($dateTo);
         $total_days = 0;
 
         //dd($dTo->format('n-Y'));
@@ -534,7 +537,9 @@ class AttendanceController extends Controller
         $monthTo = $dateToCarbon->format('n');
         $yearFrom = $dateFromCarbon->format('Y');
         $yearTo = $dateToCarbon->format('Y');
-
+        
+        $dFrom = Carbon::parse($dateFrom);
+        $dTo = Carbon::parse($dateTo);
         $total_days = 0;
 
         //dd($dTo->format('n-Y'));
