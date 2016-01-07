@@ -62,8 +62,7 @@ class AttendanceController extends Controller
         $monthTo = $dateToCarbon->format('n');
         $yearFrom = $dateFromCarbon->format('Y');
         $yearTo = $dateToCarbon->format('Y');
-        
-        
+
         $dFrom = Carbon::parse($dateFrom);
         $dTo = Carbon::parse($dateTo);
         $total_days = 0;
@@ -81,6 +80,7 @@ class AttendanceController extends Controller
         else{
             $total_days += $this->daysCount(intval($dTo->format('n')),intval($dTo->format('Y')));
         }
+
        
         $showAbsent = $request->input('view-absent') == 1?true:false;
         $labors = Labor::where('deleted','false')->orderBy('employee_no')->get();
@@ -537,7 +537,7 @@ class AttendanceController extends Controller
         $monthTo = $dateToCarbon->format('n');
         $yearFrom = $dateFromCarbon->format('Y');
         $yearTo = $dateToCarbon->format('Y');
-        
+
         $dFrom = Carbon::parse($dateFrom);
         $dTo = Carbon::parse($dateTo);
         $total_days = 0;
