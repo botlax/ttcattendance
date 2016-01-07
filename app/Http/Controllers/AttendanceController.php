@@ -63,8 +63,21 @@ class AttendanceController extends Controller
         $yearFrom = $dateFromCarbon->format('Y');
         $yearTo = $dateToCarbon->format('Y');
 
-        $total_days = $dateFromCarbon->diffInDays($dateToCarbon);
-        $total_days = $total_days == 0?1:$total_days;
+        $total_days = 0;
+
+        //dd($dTo->format('n-Y'));
+        if($dateFromCarbon->format('n-Y') != $dTo->format('n-Y')){
+            do {
+                $total_days += $this->daysCount(intval($dFrom->format('n')),intval($dFrom->format('Y')));
+                $dFrom->addMonth();
+            } while ($dFrom->format('n-Y') != $dTo->format('n-Y'));
+
+            $total_days += $this->daysCount(intval($dTo->format('n')),intval($dTo->format('Y')));
+            
+        }
+        else{
+            $total_days += $this->daysCount(intval($dTo->format('n')),intval($dTo->format('Y')));
+        }
        
         $showAbsent = $request->input('view-absent') == 1?true:false;
         $labors = Labor::where('deleted','false')->orderBy('employee_no')->get();
@@ -522,8 +535,21 @@ class AttendanceController extends Controller
         $yearFrom = $dateFromCarbon->format('Y');
         $yearTo = $dateToCarbon->format('Y');
 
-        $total_days = $dateFromCarbon->diffInDays($dateToCarbon);
-         $total_days = $total_days == 0?1:$total_days;
+        $total_days = 0;
+
+        //dd($dTo->format('n-Y'));
+        if($dateFromCarbon->format('n-Y') != $dTo->format('n-Y')){
+            do {
+                $total_days += $this->daysCount(intval($dFrom->format('n')),intval($dFrom->format('Y')));
+                $dFrom->addMonth();
+            } while ($dFrom->format('n-Y') != $dTo->format('n-Y'));
+
+            $total_days += $this->daysCount(intval($dTo->format('n')),intval($dTo->format('Y')));
+            
+        }
+        else{
+            $total_days += $this->daysCount(intval($dTo->format('n')),intval($dTo->format('Y')));
+        }
 
         $showAbsent = \Input::get('view_absent') == 1?true:false;
         $labors = Labor::where('deleted','false')->orderBy('employee_no')->skip($skip)->take($take)->get();
