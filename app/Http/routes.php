@@ -88,7 +88,6 @@ Route::post('/employees/deleted/{id}',['uses' => 'LaborController@undeleteLabor'
 Route::get('/employees/add',['uses' => 'LaborController@add']);
 Route::post('/employees/add',['uses' => 'LaborController@store', 'as' => 'storeLabor']);
 Route::get('/employees/with-loan',['uses' => 'LaborController@withLoan']);
-Route::get('/employees/fix',['uses' => 'LaborController@fix']);
 Route::get('/employees/{id}/loan',['uses' => 'LaborController@indexLoan']);
 Route::post('/employees/{id}/loan',['uses' => 'LaborController@updateLoan', 'as' => 'updateLoan']);
 Route::get('/employees/{id}/loan/add',['uses' => 'LaborController@addLoan']);
@@ -107,6 +106,7 @@ Route::get('user/logout', 'Auth\AuthController@getLogout');
 Route::get('user/register', ['middleware'=>['auth','role'],'uses'=>'Auth\AuthController@getRegister']);
 Route::post('user/register', 'Auth\AuthController@postRegister');
 
+/*
 //Bingo
 Route::get('/bingo','BingoController@index');
 Route::get('/bingo/create-server', ['uses'=>'BingoController@serverForm']);
@@ -129,3 +129,4 @@ Route::get('/bingo/server/{id}/restart','BingoController@restartGame');
 Route::post('/bingo/server/{id}/new-game',['uses'=>'BingoController@postNewGame','as'=>'postNewGame']);
 Route::post('/bingo/server/{id}/login',['uses'=>'BingoController@serverRoomAuthPost','as'=>'bingoPostLogin']);
 
+*/

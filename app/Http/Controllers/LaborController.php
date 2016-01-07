@@ -42,26 +42,6 @@ class LaborController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
-    public function fix()
-    {
-        $x = 1;
-
-        $labors = Labor::orderBy('employee_no','ASC')->get();
-        foreach ($labors as $labor) {
-            $user = $labor;
-            $user->employee_no = $x;
-            $user->name = 'Employee '.strval($x);
-            $user->save();
-            $x++;
-        }
-        
-    }
-
-    /**
      * Display deleted users
      *
      * @return Response

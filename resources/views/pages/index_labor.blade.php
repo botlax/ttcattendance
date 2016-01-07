@@ -10,7 +10,6 @@ Users
 		<a id="labor-btn-add" role="button" class="btn btn-default" href="{{ url('/employees/add') }}">Add</a>
 		<a id="labor-btn-show" role="button" class="btn btn-default" href="{{ url('/employees') }}">Show all</a>
 		<a id="labor-btn-loan" role="button" class="btn btn-default" href="{{ url('/employees/with-loan') }}">With Loan</a>
-		<a id="labor-btn-loan" role="button" class="btn btn-default" href="{{ url('/employees/fix') }}">Fix</a>
 	</div>
 @include('partials._error')
 	<div class="col-md-4 col-md-offset-4 col-sm-6 col-xs-12">
