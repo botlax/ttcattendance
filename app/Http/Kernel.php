@@ -31,5 +31,6 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'role' => \App\Http\Middleware\RoleCheck::class,
         'notAdmin' => \App\Http\Middleware\AdminCheck::class,
+        'bingoPlayer' => \App\Http\Middleware\BingoPlayer::class
     ];
 }

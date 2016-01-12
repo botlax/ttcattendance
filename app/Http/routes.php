@@ -106,7 +106,6 @@ Route::get('user/logout', 'Auth\AuthController@getLogout');
 Route::get('user/register', ['middleware'=>['auth','role'],'uses'=>'Auth\AuthController@getRegister']);
 Route::post('user/register', 'Auth\AuthController@postRegister');
 
-/*
 //Bingo
 Route::get('/bingo','BingoController@index');
 Route::get('/bingo/create-server', ['uses'=>'BingoController@serverForm']);
@@ -116,8 +115,18 @@ Route::post('/bingo/servers', ['uses'=>'BingoController@fetchServers', 'as' => '
 
 //Bingo Ajax
 Route::post('/bingo/server/getGameStatus','BingoController@ajaxGetGameStatus');
+Route::post('/bingo/server/getGameStart','BingoController@ajaxGetGameStart');
 Route::post('/bingo/server/startGame','BingoController@ajaxStartGame');
-
+Route::post('/bingo/server/setCards','BingoController@ajaxSetCards');
+Route::post('/bingo/server/playerStatus','BingoController@ajaxPlayerStatus');
+Route::post('/bingo/server/getCardCount','BingoController@ajaxGetCardCount');
+Route::post('/bingo/server/thick','BingoController@ajaxThick');
+Route::post('/bingo/server/ball','BingoController@ajaxBall');
+Route::post('/bingo/server/bingo','BingoController@ajaxBingo');
+Route::post('/bingo/server/reset','BingoController@ajaxReset');
+Route::post('/bingo/server/fetchWinners','BingoController@ajaxFetchWinners');
+Route::post('/bingo/server/checkStatus','BingoController@ajaxCheckStatus');
+Route::post('/bingo/server/fetchBalls','BingoController@ajaxFetchBalls');
 
 Route::get('/bingo/server/{id}','BingoController@serverRoom');
 Route::get('/bingo/server/{id}/login','BingoController@serverRoomAuth');
@@ -129,4 +138,3 @@ Route::get('/bingo/server/{id}/restart','BingoController@restartGame');
 Route::post('/bingo/server/{id}/new-game',['uses'=>'BingoController@postNewGame','as'=>'postNewGame']);
 Route::post('/bingo/server/{id}/login',['uses'=>'BingoController@serverRoomAuthPost','as'=>'bingoPostLogin']);
 
-*/
