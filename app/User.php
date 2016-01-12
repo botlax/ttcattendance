@@ -68,4 +68,13 @@ class User extends Model implements AuthenticatableContract,
             return false;
         }
     }
+    
+    public function isBingoPlayer(){
+        if(\Auth::user()->role->role == 'bp'){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }
