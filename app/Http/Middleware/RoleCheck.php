@@ -16,7 +16,12 @@ class RoleCheck
     public function handle($request, Closure $next)
     {   
         if(!$request->user()->isAdmin()){
-            return redirect('attendance/list');
+            if($request->user()->role()->first()->role == 'bp'){
+                return redirect('bingo');
+            }
+            else{
+                return redirect('attendance/list');
+            }
         }
         return $next($request);
     }

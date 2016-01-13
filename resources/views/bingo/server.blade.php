@@ -112,7 +112,7 @@
     	var fetchBallsHolder;
     	var repositionHolder;
 
-   		@if($server->start != 'ongoing')
+   		function rollThemBalls(){
     		for(var x = 1; x < 76;x++){
     			if(x > 0 && x <16){
   					letter = 'B';
@@ -139,7 +139,9 @@
     				$('#ball-list').append(liClone);
     			}
     		},500);
-    	@endif
+    	}
+    	rollThemBalls();
+    	
 
 
 	@if(session('status') != 'admin')
@@ -423,7 +425,9 @@
 		      		if(data == 'yes'){
 		      			@if(session('status') == 'admin')
 		      			$('#card-opt').remove();
-    					$('#game-proper .container').append('<button id="start">Start</button><div id="players"></div>');
+			      			@if($server->start != 'ongoing')
+	    					$('#game-proper .container').append('<button id="start">Start</button><div id="players"></div>');
+    						@endif
     					getGameStatusHolder = setInterval(getPlayerStatus,3000);
     					@else
     					setCards();
@@ -431,6 +435,7 @@
 		      		}else{
 		      			@if(session('status') != 'admin')
 		      			$('#late-dialog').dialog('open');
+		      			$('#game-proper .container').append('<div class="row"><div class="4u -1u 6u(narrower) full-mobile"><section><h3>Normal Mode</h3><img src="/images/normal.gif" class="flex"></section></div><div class="4u -2u 6u(narrower) full-mobile"><section><h3>Jackpot Mode</h3><img src="/images/jackpot.gif" class="flex"></section></div></div>');
 		      			@endif
 		      		}
 		      		
@@ -524,7 +529,7 @@
 					      	data: {'id':{{$id}}},
 					      	success: function(data){
 					      		if(data == 'baller'){
-					      			$('#game-opt .container').append('<button id="ball">ball</button>');
+					      			$('#game-proper .container').append('<button id="ball">ball</button>');
 					      		}
 					     	},	
 					       	error: function(ts) { $('body').html(ts.responseText); }
