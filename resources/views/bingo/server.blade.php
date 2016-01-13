@@ -430,6 +430,7 @@
     						@endif
     					getGameStatusHolder = setInterval(getPlayerStatus,3000);
     					@else
+    					fetchBalls();
     					setCards();
     					@endif
 		      		}else{
