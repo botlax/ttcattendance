@@ -481,7 +481,9 @@ class BingoController extends Controller
                         }
                     }
                 }
-                $thicked['card'.$x][] = $card['N'][2];
+                do{
+                    $thicked['card'.$x][] = $card['N'][2];
+                }while (!in_array($card['N'][2], $thicked['card'.$x]) );
                 $x++;
             }
 
@@ -584,7 +586,9 @@ class BingoController extends Controller
 
             $thicked = session('thicked');
             if(!in_array(intval($num), $thicked['card'.$cardNo])){
-                $thicked['card'.$cardNo][] = intval($num);
+                do{
+                    $thicked['card'.$cardNo][] = intval($num);
+                }while(!in_array(intval($num), $thicked['card'.$cardNo]));
             }
             session(['thicked' => $thicked]);
 
@@ -646,7 +650,7 @@ class BingoController extends Controller
         if($server->mode == 'normal'){
             foreach($combos['card'.$cardNo] as $combo){
                 $match = array_intersect($combo, $thicked);
-                if(count($match) == 5){
+                if(count($match) > 4){
                     $response['bingo'] = true;
                     if(intval($winners) == 1){
                         $response['game'] = 'gameover';
